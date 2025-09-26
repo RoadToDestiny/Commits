@@ -55,3 +55,11 @@ def add_expense():
         if amount > BALANCE:
             print("Ошибка: Недостаточно средств на балансе!")
             return
+
+        # Вычитаем сумму расхода и добавляем запись в историю
+        BALANCE -= amount
+        HISTORY.append(f"Расход: -{amount:.2f} руб.")
+        print(f"Расход в размере {amount:.2f} руб. успешно добавлен!")
+        
+    except ValueError:
+        print("Ошибка! Пожалуйста, введите числовое значение.")
