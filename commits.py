@@ -79,4 +79,16 @@ def show_history():
             print(f"{i}. {operation}")
     
     print("=======================")
+
+def clear_history():
+    """Очищает всю историю операций"""
+    global HISTORY
     
+    # Запрашиваем подтверждение от пользователя
+    confirm = input("Вы уверены, что хотите очистить историю? (да/нет): ")
+    
+    if confirm.lower() == 'да':
+        HISTORY.clear()
+        print("История операций очищена!")
+    else:
+        print("Очистка истории отменена.")   
