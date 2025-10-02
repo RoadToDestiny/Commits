@@ -56,6 +56,43 @@ def clear_history():
     else:
         print("Очистка истории отменена.")
 
+def show_financial_analysis():
+    """Показывает простой финансовый анализ"""
+    if not HISTORY:
+        print("Недостаточно данных для анализа.")
+        return
+    
+    total_income = 0
+    total_expenses = 0
+    
+    for operation in HISTORY:
+        if operation.startswith("Доход:"):
+            amount_str = operation.split("+")[1].split(" ")[0]
+            total_income += float(amount_str)
+        elif operation.startswith("Расход:"):
+            amount_str = operation.split("-")[1].split(" ")[0]
+            total_expenses += float(amount_str)
+    
+    print("\n=== Финансовый анализ ===")
+    print(f"Всего доходов: {total_income:.2f} руб.")
+    print(f"Всего расходов: {total_expenses:.2f} руб.")
+    print(f"Чистая прибыль: {total_income - total_expenses:.2f} руб.")
+    
+    if total_income > 0:
+        expense_percentage = (total_expenses / total_income) * 100
+        print(f"Расходы составляют {expense_percentage:.1f}% от доходов")
+    
+    print("=========================")
+
+
+
+
+
+
+
+
+
+
 def main():
     print("Добро пожаловать в персональный финансовый помощник!")
     
