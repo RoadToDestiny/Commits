@@ -107,6 +107,23 @@ def get_user_choice():
         print("Ошибка! Пожалуйста, введите число от 1 до 7.")
         return -1
 
+def initialize_sample_data():
+    """Инициализирует пример начальных данных"""
+    global BALANCE, HISTORY
+    
+    sample_operations = [
+        ("Доход: +5000.00 руб.", 5000),
+        ("Расход: -1500.00 руб.", -1500),
+        ("Доход: +3000.00 руб.", 3000),
+        ("Расход: -800.00 руб.", -800)
+    ]
+    
+    for operation, amount in sample_operations:
+        HISTORY.append(operation)
+        BALANCE += amount
+    
+    print("Загружены примеры данных для демонстрации.")
+
 
 
 
