@@ -124,7 +124,38 @@ def initialize_sample_data():
     
     print("Загружены примеры данных для демонстрации.")
 
-
+def main():
+    """Главная функция программы"""
+    print("Добро пожаловать в персональный финансовый помощник!")
+    
+    # Основной цикл программы
+    while True:
+        show_menu()
+        choice = get_user_choice()
+        
+        if choice == 1:
+            show_balance()
+        elif choice == 2:
+            add_income()
+        elif choice == 3:
+            add_expense()
+        elif choice == 4:
+            show_history()
+        elif choice == 5:
+            clear_history()
+        elif choice == 6:
+            show_financial_analysis()
+        elif choice == 7:
+            print("\n Спасибо за использование финансового помощника!")
+            print("До свидания!")
+            break
+        elif choice == -1:
+            continue
+        else:
+            print("Неверный выбор! Пожалуйста, выберите действие от 1 до 7.")
+        
+        # Пауза для удобства
+        input("\nНажмите Enter для продолжения...")
 
 
 
