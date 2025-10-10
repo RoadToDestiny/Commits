@@ -44,7 +44,7 @@ def add_task():
             'created_at': '2024-01-01'
         }
         tasks.append(task)
-        print(f"✅ Задача '{title}' добавлена!")
+        print(f"Задача '{title}' добавлена!")
     else:
         print("Название задачи не может быть пустым!")
 
@@ -87,6 +87,55 @@ def main():
     show_tasks()
     show_task_details(1)
 
+def complete_task():
+    """Отмечает задачу как выполненную"""
+    show_tasks()
+    
+    try:
+        task_id = int(input("Введите ID задачи для отметки: "))
+        
+        for task in tasks:
+            if task['id'] == task_id:
+                task['completed'] = True
+                print(f"Задача '{task['title']}' отмечена как выполненная!")
+                return
+        
+        print(f"Ошибка: Задача с ID {task_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def delete_task():
+    """Удаляет задачу из списка"""
+    show_tasks()
+    
+    try:
+        task_id = int(input("Введите ID задачи для удаления: "))
+        
+        for i, task in enumerate(tasks):
+            if task['id'] == task_id:
+                deleted_title = task['title']
+                tasks.pop(i)
+                print(f"Задача '{deleted_title}' удалена!")
+                return
+        
+        print(f"Ошибка: Задача с ID {task_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def main():
+    print("Добро пожаловать в менеджер задач!")
+    
+    # Тестовые данные
+    tasks.extend([
+        {'id': 1, 'title': 'Изучить Python', 'completed': False, 'created_at': '2024-01-01'},
+        {'id': 2, 'title': 'Сделать домашнее задание', 'completed': True, 'created_at': '2024-01-02'}
+    ])
+    
+    # Демонстрация новых функций
+    show_tasks()
+    complete_task()
+    delete_task()
+    show_tasks()
 
 
 
