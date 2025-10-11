@@ -137,7 +137,63 @@ def main():
     delete_task()
     show_tasks()
 
+def add_task_with_category():
+    """Добавляет задачу с выбором категории"""
+    title = input("Введите название задачи: ")
+    
+    if not title.strip():
+        print("Ошибка: Название задачи не может быть пустым!")
+        return
+    
+    print("\nДоступные категории:")
+    for i, category in enumerate(categories, 1):
+        print(f"   {i}. {category}")
+    
+    try:
+        category_choice = int(input("Выберите категорию (номер): ")) - 1
+        
+        if 0 <= category_choice < len(categories):
+            task = {
+                'id': len(tasks) + 1,
+                'title': title,
+                'category': categories[category_choice],
+                'completed': False,
+                'created_at': '2024-01-01'
+            }
+            tasks.append(task)
+            print(f"Задача '{title}' добавлена в категорию '{categories[category_choice]}'!")
+        else:
+            print("Ошибка: Неверный выбор категории!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите число!")
 
+def show_tasks_by_category():
+    """Показывает задачи по категориям"""
+    if not tasks:
+        print("Список задач пуст!")
+        return
+    
+    for category in categories:
+        category_tasks = [task for task in tasks if task.get('category') == category]
+        
+        if category_tasks:
+            print(f"\nКатегория '{category}':")
+            for task in category_tasks:
+                status = "[X]" if task['completed'] else "[ ]"
+                print(f"   {task['id']}. {status} {task['title']}")
+
+def main():
+    print("Добро пожаловать в менеджер задач!")
+    
+    # Тестовые данные с категориями
+    tasks.extend([
+        {'id': 1, 'title': 'Изучить Python', 'category': 'Учеба', 'completed': False, 'created_at': '2024-01-01'},
+        {'id': 2, 'title': 'Подготовить отчет', 'category': 'Работа', 'completed': True, 'created_at': '2024-01-02'}
+    ])
+    
+    # Демонстрация работы с категориями
+    add_task_with_category()
+    show_tasks_by_category()
 
 if __name__ == "__main__":
     main()
