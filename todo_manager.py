@@ -195,5 +195,73 @@ def main():
     add_task_with_category()
     show_tasks_by_category()
 
+def add_task_with_priority():
+    """Добавляет задачу с приоритетом"""
+    title = input("Введите название задачи: ")
+    
+    if not title.strip():
+        print("Ошибка: Название задачи не может быть пустым!")
+        return
+    
+    print("\nДоступные приоритеты:")
+    for i, priority in enumerate(priorities.keys(), 1):
+        print(f"   {i}. {priority}")
+    
+    try:
+        priority_choice = int(input("Выберите приоритет (номер): ")) - 1
+        priority_list = list(priorities.keys())
+        
+        if 0 <= priority_choice < len(priority_list):
+            priority = priority_list[priority_choice]
+            
+            task = {
+                'id': len(tasks) + 1,
+                'title': title,
+                'category': 'Другое',  # Упрощаем для демонстрации
+                'priority': priority,
+                'priority_value': priorities[priority],
+                'completed': False,
+                'created_at': '2024-01-01'
+            }
+            tasks.append(task)
+            print(f"Задача '{title}' добавлена с приоритетом '{priority}'!")
+        else:
+            print("Ошибка: Неверный выбор приоритета!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите число!")
+
+def show_tasks_sorted_by_priority():
+    """Показывает задачи, отсортированные по приоритету"""
+    if not tasks:
+        print("Список задач пуст!")
+        return
+    
+    sorted_tasks = sorted(tasks, key=lambda x: x.get('priority_value', 0), reverse=True)
+    
+    print("\nЗадачи по приоритету:")
+    print("-" * 50)
+    
+    for task in sorted_tasks:
+        status = "[X]" if task['completed'] else "[ ]"
+        priority_symbol = "!!!" if task.get('priority') == 'Срочный' else \
+                         "!!" if task.get('priority') == 'Высокий' else \
+                         "!" if task.get('priority') == 'Средний' else ""
+        
+        print(f"{task['id']}. {status} {priority_symbol:3} {task['title']}")
+
+def main():
+    print("Добро пожаловать в менеджер задач!")
+    
+    # Тестовые данные с приоритетами
+    tasks.extend([
+        {'id': 1, 'title': 'Изучить Python', 'category': 'Учеба', 'priority': 'Высокий', 'priority_value': 3, 'completed': False, 'created_at': '2024-01-01'},
+        {'id': 2, 'title': 'Купить молоко', 'category': 'Личное', 'priority': 'Низкий', 'priority_value': 1, 'completed': False, 'created_at': '2024-01-02'},
+        {'id': 3, 'title': 'Срочный звонок', 'category': 'Работа', 'priority': 'Срочный', 'priority_value': 4, 'completed': False, 'created_at': '2024-01-02'}
+    ])
+    
+    # Демонстрация приоритетов
+    add_task_with_priority()
+    show_tasks_sorted_by_priority()
+
 if __name__ == "__main__":
     main()
