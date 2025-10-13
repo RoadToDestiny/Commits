@@ -263,5 +263,71 @@ def main():
     add_task_with_priority()
     show_tasks_sorted_by_priority()
 
+def search_tasks():
+    """Ищет задачи по ключевому слову"""
+    keyword = input("Введите ключевое слово для поиска: ").lower()
+    
+    if not keyword.strip():
+        print("Ошибка: Введите ключевое слово для поиска!")
+        return
+    
+    found_tasks = [task for task in tasks if keyword in task['title'].lower()]
+    
+    if found_tasks:
+        print(f"\nНайдено задач: {len(found_tasks)}")
+        for task in found_tasks:
+            status = "[X]" if task['completed'] else "[ ]"
+            print(f"   {task['id']}. {status} {task['title']}")
+    else:
+        print("Задачи не найдены!")
+
+def filter_tasks_by_status():
+    """Фильтрует задачи по статусу выполнения"""
+    print("\nФильтр по статусу:")
+    print("1. Все задачи")
+    print("2. Только активные")
+    print("3. Только выполненные")
+    
+    try:
+        choice = int(input("Выберите вариант: "))
+        
+        if choice == 1:
+            show_tasks()
+        elif choice == 2:
+            active_tasks = [task for task in tasks if not task['completed']]
+            if active_tasks:
+                print("\nАктивные задачи:")
+                for task in active_tasks:
+                    print(f"   {task['id']}. {task['title']}")
+            else:
+                print("Нет активных задач!")
+        elif choice == 3:
+            completed_tasks = [task for task in tasks if task['completed']]
+            if completed_tasks:
+                print("\nВыполненные задачи:")
+                for task in completed_tasks:
+                    print(f"   {task['id']}. {task['title']}")
+            else:
+                print("Нет выполненных задач!")
+        else:
+            print("Ошибка: Неверный выбор!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите число!")
+
+def main():
+    print("Добро пожаловать в менеджер задач!")
+    
+    # Тестовые данные
+    tasks.extend([
+        {'id': 1, 'title': 'Изучить Python', 'category': 'Учеба', 'priority': 'Высокий', 'completed': False, 'created_at': '2024-01-01'},
+        {'id': 2, 'title': 'Сделать домашнее задание', 'category': 'Учеба', 'priority': 'Средний', 'completed': True, 'created_at': '2024-01-02'},
+        {'id': 3, 'title': 'Купить продукты', 'category': 'Личное', 'priority': 'Низкий', 'completed': False, 'created_at': '2024-01-02'}
+    ])
+    
+    # Демонстрация поиска и фильтрации
+    search_tasks()
+    filter_tasks_by_status()
+
+
 if __name__ == "__main__":
     main()
