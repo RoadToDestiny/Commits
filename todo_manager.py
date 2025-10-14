@@ -328,6 +328,66 @@ def main():
     search_tasks()
     filter_tasks_by_status()
 
+def show_statistics():
+    """Показывает статистику по задачам"""
+    if not tasks:
+        print("Нет данных для статистики!")
+        return
+    
+    total_tasks = len(tasks)
+    completed_tasks = len([task for task in tasks if task['completed']])
+    active_tasks = total_tasks - completed_tasks
+    completion_rate = (completed_tasks / total_tasks) * 100 if total_tasks > 0 else 0
+    
+    print("\nСтатистика задач:")
+    print("-" * 30)
+    print(f"Всего задач: {total_tasks}")
+    print(f"Выполнено: {completed_tasks}")
+    print(f"Активных: {active_tasks}")
+    print(f"Процент выполнения: {completion_rate:.1f}%")
+    
+    # Статистика по категориям
+    print("\nСтатистика по категориям:")
+    for category in categories:
+        category_tasks = [task for task in tasks if task.get('category') == category]
+        if category_tasks:
+            completed_in_category = len([task for task in category_tasks if task['completed']])
+            print(f"   {category}: {len(category_tasks)} задач ({completed_in_category} выполнено)")
+
+def show_priority_analysis():
+    """Анализ приоритетов задач"""
+    if not tasks:
+        print("Нет данных для анализа!")
+        return
+    
+    print("\nАнализ приоритетов:")
+    
+    for priority_name, priority_value in priorities.items():
+        priority_tasks = [task for task in tasks if task.get('priority_value') == priority_value]
+        completed_priority = len([task for task in priority_tasks if task['completed']])
+        
+        if priority_tasks:
+            completion_rate = (completed_priority / len(priority_tasks)) * 100
+            symbol = "!!!" if priority_name == 'Срочный' else \
+                    "!!" if priority_name == 'Высокий' else \
+                    "!" if priority_name == 'Средний' else ""
+            
+            print(f"   {symbol} {priority_name}: {len(priority_tasks)} задач ({completion_rate:.1f}% выполнено)")
+
+def main():
+    print("Добро пожаловать в менеджер задач!")
+    
+    # Тестовые данные для статистики
+    tasks.extend([
+        {'id': 1, 'title': 'Изучить Python', 'category': 'Учеба', 'priority': 'Высокий', 'completed': False, 'created_at': '2024-01-01'},
+        {'id': 2, 'title': 'Сделать ДЗ', 'category': 'Учеба', 'priority': 'Средний', 'completed': True, 'created_at': '2024-01-02'},
+        {'id': 3, 'title': 'Купить продукты', 'category': 'Личное', 'priority': 'Низкий', 'completed': False, 'created_at': '2024-01-02'},
+        {'id': 4, 'title': 'Срочный отчет', 'category': 'Работа', 'priority': 'Срочный', 'completed': True, 'created_at': '2024-01-02'}
+    ])
+    
+    # Демонстрация статистики
+    show_statistics()
+    show_priority_analysis()
 
 if __name__ == "__main__":
     main()
