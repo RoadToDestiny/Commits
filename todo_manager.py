@@ -389,5 +389,51 @@ def main():
     show_statistics()
     show_priority_analysis()
 
+def show_main_menu():
+    """Показывает главное меню программы"""
+    print("\n" + "="*50)
+    print("           МЕНЕДЖЕР ЗАДАЧ")
+    print("="*50)
+    print("1. Показать все задачи")
+    print("2. Добавить задачу")
+    print("3. Отметить задачу выполненной")
+    print("4. Удалить задачу")
+    print("5. Поиск задач")
+    print("6. Фильтр по статусу")
+    print("7. Статистика")
+    print("8. Анализ приоритетов")
+    print("9. Выход")
+    print("="*50)
+
+def get_menu_choice():
+    """Получает и проверяет выбор пользователя"""
+    try:
+        choice = int(input("\nВыберите действие (1-9): "))
+        return choice
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите число от 1 до 9!")
+        return -1
+
+def initialize_sample_data():
+    """Инициализирует примеры задач для демонстрации"""
+    sample_tasks = [
+        {'id': 1, 'title': 'Изучить Python', 'category': 'Учеба', 'priority': 'Высокий', 'completed': False, 'created_at': '2024-01-01'},
+        {'id': 2, 'title': 'Сделать домашнее задание', 'category': 'Учеба', 'priority': 'Средний', 'completed': True, 'created_at': '2024-01-02'},
+        {'id': 3, 'title': 'Купить продукты', 'category': 'Личное', 'priority': 'Низкий', 'completed': False, 'created_at': '2024-01-02'},
+        {'id': 4, 'title': 'Подготовить отчет', 'category': 'Работа', 'priority': 'Срочный', 'completed': True, 'created_at': '2024-01-03'}
+    ]
+    tasks.extend(sample_tasks)
+
+def main():
+    print("Добро пожаловать в менеджер задач!")
+    
+    # Загружаем примеры данных
+    initialize_sample_data()
+    
+    # Демонстрируем меню
+    show_main_menu()
+    choice = get_menu_choice()
+    print(f"Вы выбрали: {choice}")
+
 if __name__ == "__main__":
     main()
