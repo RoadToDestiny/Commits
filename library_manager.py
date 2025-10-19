@@ -37,3 +37,44 @@ def main():
     # Тестируем добавление книг
     add_book()
     print(f"Всего книг в библиотеке: {len(books)}")
+
+def show_all_books():
+    """Показывает все книги в библиотеке"""
+    if not books:
+        print("Библиотека пуста!")
+        return
+    
+    print("\nВсе книги в библиотеке:")
+    print("-" * 60)
+    
+    for book in books:
+        status = "Прочитана" if book['read'] else "Не прочитана"
+        print(f"{book['id']}. '{book['title']}' - {book['author']} [{status}]")
+    
+    print("-" * 60)
+
+def show_book_details(book_id):
+    """Показывает детальную информацию о книге"""
+    for book in books:
+        if book['id'] == book_id:
+            print(f"\nДетали книги #{book_id}:")
+            print(f"   Название: {book['title']}")
+            print(f"   Автор: {book['author']}")
+            print(f"   Год: {book['year'] or 'Не указан'}")
+            print(f"   Жанр: {book['genre'] or 'Не указан'}")
+            print(f"   Статус: {'Прочитана' if book['read'] else 'Не прочитана'}")
+            return
+    
+    print(f"Ошибка: Книга с ID {book_id} не найдена!")
+
+def main():
+    print("Добро пожаловать в систему учета домашней библиотеки!")
+    
+    # Добавляем тестовые книги
+    books.extend([
+        {'id': 1, 'title': 'Мастер и Маргарита', 'author': 'Михаил Булгаков', 'year': '1966', 'genre': 'Роман', 'read': True},
+        {'id': 2, 'title': '1984', 'author': 'Джордж Оруэлл', 'year': '1949', 'genre': 'Антиутопия', 'read': False}
+    ])
+    
+    show_all_books()
+    show_book_details(1)
