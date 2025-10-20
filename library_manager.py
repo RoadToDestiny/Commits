@@ -78,3 +78,75 @@ def main():
     
     show_all_books()
     show_book_details(1)
+
+def edit_book():
+    """Редактирует информацию о книге"""
+    show_all_books()
+    
+    try:
+        book_id = int(input("Введите ID книги для редактирования: "))
+        
+        for book in books:
+            if book['id'] == book_id:
+                print(f"\nРедактирование книги: '{book['title']}'")
+                book['title'] = input(f"Новое название [{book['title']}]: ") or book['title']
+                book['author'] = input(f"Новый автор [{book['author']}]: ") or book['author']
+                book['year'] = input(f"Год издания [{book['year']}]: ") or book['year']
+                book['genre'] = input(f"Жанр [{book['genre']}]: ") or book['genre']
+                
+                print("Книга успешно обновлена!")
+                return
+        
+        print(f"Ошибка: Книга с ID {book_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def mark_as_read():
+    """Отмечает книгу как прочитанную"""
+    show_all_books()
+    
+    try:
+        book_id = int(input("Введите ID прочитанной книги: "))
+        
+        for book in books:
+            if book['id'] == book_id:
+                book['read'] = True
+                print(f"Книга '{book['title']}' отмечена как прочитанная!")
+                return
+        
+        print(f"Ошибка: Книга с ID {book_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def delete_book():
+    """Удаляет книгу из библиотеки"""
+    show_all_books()
+    
+    try:
+        book_id = int(input("Введите ID книги для удаления: "))
+        
+        for i, book in enumerate(books):
+            if book['id'] == book_id:
+                deleted_title = book['title']
+                books.pop(i)
+                print(f"Книга '{deleted_title}' удалена из библиотеки!")
+                return
+        
+        print(f"Ошибка: Книга с ID {book_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def main():
+    print("Добро пожаловать в систему учета домашней библиотеки!")
+    
+    # Тестовые данные
+    books.extend([
+        {'id': 1, 'title': 'Мастер и Маргарита', 'author': 'Михаил Булгаков', 'year': '1966', 'genre': 'Роман', 'read': True},
+        {'id': 2, 'title': '1984', 'author': 'Джордж Оруэлл', 'year': '1949', 'genre': 'Антиутопия', 'read': False}
+    ])
+    
+    # Демонстрация новых функций
+    edit_book()
+    mark_as_read()
+    delete_book()
+    show_all_books()    
