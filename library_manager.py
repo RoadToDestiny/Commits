@@ -149,4 +149,97 @@ def main():
     edit_book()
     mark_as_read()
     delete_book()
-    show_all_books()    
+    show_all_books()
+
+def search_books():
+    """Ищет книги по различным критериям"""
+    print("\nПоиск книг:")
+    print("1. По названию")
+    print("2. По автору")
+    print("3. По жанру")
+    
+    try:
+        choice = int(input("Выберите критерий поиска: "))
+        keyword = input("Введите ключевое слово: ").lower()
+        
+        found_books = []
+        
+        if choice == 1:
+            found_books = [book for book in books if keyword in book['title'].lower()]
+        elif choice == 2:
+            found_books = [book for book in books if keyword in book['author'].lower()]
+        elif choice == 3:
+            found_books = [book for book in books if book['genre'] and keyword in book['genre'].lower()]
+        else:
+            print("Ошибка: Неверный выбор!")
+            return
+        
+        if found_books:
+            print(f"\nНайдено книг: {len(found_books)}")
+            for book in found_books:
+                status = "Прочитана" if book['read'] else "Не прочитана"
+                print(f"   {book['id']}. '{book['title']}' - {book['author']} [{status}]")
+        else:
+            print("Книги не найдены!")
+            
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите число!")
+
+def filter_books():
+    """Фильтрует книги по различным критериям"""
+    print("\nФильтр книг:")
+    print("1. Все книги")
+    print("2. Только прочитанные")
+    print("3. Только непрочитанные")
+    print("4. По автору")
+    
+    try:
+        choice = int(input("Выберите вариант фильтра: "))
+        
+        if choice == 1:
+            show_all_books()
+        elif choice == 2:
+            read_books = [book for book in books if book['read']]
+            if read_books:
+                print("\nПрочитанные книги:")
+                for book in read_books:
+                    print(f"   {book['id']}. '{book['title']}' - {book['author']}")
+            else:
+                print("Нет прочитанных книг!")
+        elif choice == 3:
+            unread_books = [book for book in books if not book['read']]
+            if unread_books:
+                print("\nНепрочитанные книги:")
+                for book in unread_books:
+                    print(f"   {book['id']}. '{book['title']}' - {book['author']}")
+            else:
+                print("Все книги прочитаны!")
+        elif choice == 4:
+            author = input("Введите имя автора: ").lower()
+            author_books = [book for book in books if author in book['author'].lower()]
+            if author_books:
+                print(f"\nКниги автора:")
+                for book in author_books:
+                    status = "Прочитана" if book['read'] else "Не прочитана"
+                    print(f"   {book['id']}. '{book['title']}' [{status}]")
+            else:
+                print("Книги этого автора не найдены!")
+        else:
+            print("Ошибка: Неверный выбор!")
+            
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите число!")
+
+def main():
+    print("Добро пожаловать в систему учета домашней библиотеки!")
+    
+    # Тестовые данные
+    books.extend([
+        {'id': 1, 'title': 'Мастер и Маргарита', 'author': 'Михаил Булгаков', 'year': '1966', 'genre': 'Роман', 'read': True},
+        {'id': 2, 'title': '1984', 'author': 'Джордж Оруэлл', 'year': '1949', 'genre': 'Антиутопия', 'read': False},
+        {'id': 3, 'title': 'Скотный двор', 'author': 'Джордж Оруэлл', 'year': '1945', 'genre': 'Сатира', 'read': True}
+    ])
+    
+    # Демонстрация поиска и фильтрации
+    search_books()
+    filter_books()    
