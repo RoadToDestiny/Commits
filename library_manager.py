@@ -243,3 +243,91 @@ def main():
     # Демонстрация поиска и фильтрации
     search_books()
     filter_books()    
+
+def show_statistics():
+    """Показывает статистику библиотеки"""
+    if not books:
+        print("Библиотека пуста! Нет данных для статистики.")
+        return
+    
+    total_books = len(books)
+    read_books = len([book for book in books if book['read']])
+    unread_books = total_books - read_books
+    read_percentage = (read_books / total_books) * 100 if total_books > 0 else 0
+    
+    print("\nСтатистика библиотеки:")
+    print("-" * 30)
+    print(f"Всего книг: {total_books}")
+    print(f"Прочитано: {read_books}")
+    print(f"Не прочитано: {unread_books}")
+    print(f"Процент прочитанных: {read_percentage:.1f}%")
+    
+    # Статистика по авторам
+    authors = {}
+    for book in books:
+        author = book['author']
+        if author in authors:
+            authors[author] += 1
+        else:
+            authors[author] = 1
+    
+    if authors:
+        print(f"\nКниг по авторам:")
+        for author, count in sorted(authors.items(), key=lambda x: x[1], reverse=True):
+            print(f"   {author}: {count} книг")
+    
+    # Статистика по жанрам
+    genres = {}
+    for book in books:
+        genre = book['genre']
+        if genre:
+            if genre in genres:
+                genres[genre] += 1
+            else:
+                genres[genre] = 1
+    
+    if genres:
+        print(f"\nКниг по жанрам:")
+        for genre, count in sorted(genres.items(), key=lambda x: x[1], reverse=True):
+            print(f"   {genre}: {count} книг")
+
+def show_reading_progress():
+    """Показывает прогресс чтения"""
+    if not books:
+        print("Библиотека пуста!")
+        return
+    
+    read_books = [book for book in books if book['read']]
+    unread_books = [book for book in books if not book['read']]
+    
+    print("\nПрогресс чтения:")
+    print("-" * 40)
+    
+    if read_books:
+        print("Прочитанные книги:")
+        for book in read_books[:5]:  # Показываем только первые 5
+            print(f"   ✓ '{book['title']}' - {book['author']}")
+        if len(read_books) > 5:
+            print(f"   ... и еще {len(read_books) - 5} книг")
+    
+    if unread_books:
+        print("\nСледующие для чтения:")
+        for book in unread_books[:5]:  # Показываем только первые 5
+            print(f"   ○ '{book['title']}' - {book['author']}")
+        if len(unread_books) > 5:
+            print(f"   ... и еще {len(unread_books) - 5} книг")
+
+def main():
+    print("Добро пожаловать в систему учета домашней библиотеки!")
+    
+    # Тестовые данные для статистики
+    books.extend([
+        {'id': 1, 'title': 'Мастер и Маргарита', 'author': 'Михаил Булгаков', 'year': '1966', 'genre': 'Роман', 'read': True},
+        {'id': 2, 'title': '1984', 'author': 'Джордж Оруэлл', 'year': '1949', 'genre': 'Антиутопия', 'read': False},
+        {'id': 3, 'title': 'Скотный двор', 'author': 'Джордж Оруэлл', 'year': '1945', 'genre': 'Сатира', 'read': True},
+        {'id': 4, 'title': 'Преступление и наказание', 'author': 'Федор Достоевский', 'year': '1866', 'genre': 'Роман', 'read': False}
+    ])
+    
+    # Демонстрация статистики
+    show_statistics()
+    show_reading_progress()
