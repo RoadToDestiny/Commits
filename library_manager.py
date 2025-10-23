@@ -331,3 +331,84 @@ def main():
     # Демонстрация статистики
     show_statistics()
     show_reading_progress()
+
+def add_rating():
+    """Добавляет или изменяет рейтинг книги"""
+    show_all_books()
+    
+    try:
+        book_id = int(input("Введите ID книги для оценки: "))
+        
+        for book in books:
+            if book['id'] == book_id:
+                try:
+                    rating = int(input("Введите рейтинг (1-5): "))
+                    if 1 <= rating <= 5:
+                        book['rating'] = rating
+                        print(f"Рейтинг {rating}/5 добавлен для книги '{book['title']}'!")
+                    else:
+                        print("Ошибка: Рейтинг должен быть от 1 до 5!")
+                except ValueError:
+                    print("Ошибка: Пожалуйста, введите число!")
+                return
+        
+        print(f"Ошибка: Книга с ID {book_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def add_review():
+    """Добавляет или изменяет отзыв о книге"""
+    show_all_books()
+    
+    try:
+        book_id = int(input("Введите ID книги для отзыва: "))
+        
+        for book in books:
+            if book['id'] == book_id:
+                review = input("Введите ваш отзыв: ")
+                if review.strip():
+                    book['review'] = review
+                    print(f"Отзыв добавлен для книги '{book['title']}'!")
+                else:
+                    print("Ошибка: Отзыв не может быть пустым!")
+                return
+        
+        print(f"Ошибка: Книга с ID {book_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def show_rated_books():
+    """Показывает книги с рейтингами"""
+    rated_books = [book for book in books if 'rating' in book]
+    
+    if not rated_books:
+        print("Нет книг с рейтингами!")
+        return
+    
+    print("\nКниги с рейтингами:")
+    print("-" * 50)
+    
+    for book in sorted(rated_books, key=lambda x: x['rating'], reverse=True):
+        stars = "★" * book['rating'] + "☆" * (5 - book['rating'])
+        print(f"{book['id']}. '{book['title']}' - {book['author']}")
+        print(f"   Рейтинг: {stars} ({book['rating']}/5)")
+        
+        if 'review' in book:
+            print(f"   Отзыв: {book['review']}")
+        print()
+
+def main():
+    print("Добро пожаловать в систему учета домашней библиотеки!")
+    
+    # Тестовые данные с рейтингами
+    books.extend([
+        {'id': 1, 'title': 'Мастер и Маргарита', 'author': 'Михаил Булгаков', 'year': '1966', 'genre': 'Роман', 'read': True, 'rating': 5, 'review': 'Шедевр мировой литературы'},
+        {'id': 2, 'title': '1984', 'author': 'Джордж Оруэлл', 'year': '1949', 'genre': 'Антиутопия', 'read': True, 'rating': 4},
+        {'id': 3, 'title': 'Скотный двор', 'author': 'Джордж Оруэлл', 'year': '1945', 'genre': 'Сатира', 'read': True, 'rating': 4},
+        {'id': 4, 'title': 'Преступление и наказание', 'author': 'Федор Достоевский', 'year': '1866', 'genre': 'Роман', 'read': False}
+    ])
+    
+    # Демонстрация рейтингов и отзывов
+    add_rating()
+    add_review()
+    show_rated_books()    
