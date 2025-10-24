@@ -412,3 +412,122 @@ def main():
     add_rating()
     add_review()
     show_rated_books()    
+
+def get_recommendations():
+    """Предлагает рекомендации для чтения"""
+    if not books:
+        print("Библиотека пуста! Нет данных для рекомендаций.")
+        return
+    
+    # Рекомендации на основе жанров прочитанных книг
+    read_books = [book for book in books if book['read'] and book.get('rating', 0) >= 4]
+    
+    if not read_books:
+        print("Рекомендуем начать с классики:")
+        classic_books = [book for book in books if not book['read']]
+        for book in classic_books[:3]:
+            print(f"   ○ '{book['title']}' - {book['author']}")
+        return
+    
+    # Находим любимые жанры
+    favorite_genres = {}
+    for book in read_books:
+        genre = book.get('genre', '')
+        if genre:
+            favorite_genres[genre] = favorite_genres.get(genre, 0) + 1
+    
+    if favorite_genres:
+        top_genre = max(favorite_genres, key=favorite_genres.get)
+        print(f"\nОсновываясь на ваших предпочтениях (любимый жанр: {top_genre}):")
+        
+        # Рекомендуем книги того же жанра
+        recommended_books = [book for book in books if not book['read'] and book.get('genre') == top_genre]
+        
+        if recommended_books:
+            for book in recommended_books[:3]:
+                print(f"   ○ '{book['title']}' - {book['author']}")
+        else:
+            print("   К сожалению, в библиотеке нет непрочитанных книг этого жанра.")
+    
+    # Рекомендации на основе авторов
+    favorite_authors = {}
+    for book in read_books:
+        author = book['author']
+        favorite_authors[author] = favorite_authors.get(author, 0) + 1
+    
+    if favorite_authors:
+        top_author = max(favorite_authors, key=favorite_authors.get)
+        print(f"\nПохожие книги автора {top_author}:")
+        
+        author_books = [book for book in books if not book['read'] and book['author'] == top_author]
+        
+        if author_books:
+            for book in author_books[:2]:
+                print(f"   ○ '{book['title']}' - {book['author']}")
+        else:
+            print("   Вы уже прочитали все книги этого автора в библиотеке.")
+
+def show_random_book():
+    """Показывает случайную книгу для чтения"""
+    if not books:
+        print("Библиотека пуста!")
+        return
+    
+    import random
+    unread_books = [book for book in books if not book['read']]
+    
+    if unread_books:
+        random_book = random.choice(unread_books)
+        print("\nСлучайная книга для чтения:")
+        print("-" * 40)
+        print(f"   '{random_book['title']}'")
+        print(f"   Автор: {random_book['author']}")
+        print(f"   Жанр: {random_book.get('genre', 'Не указан')}")
+        print(f"   Год: {random_book.get('year', 'Не указан')}")
+    else:
+        print("Поздравляем! Вы прочитали все книги в библиотеке!")
+
+def show_reading_challenge():
+    """Показывает прогресс по чтению"""
+    if not books:
+        print("Библиотека пуста!")
+        return
+    
+    total_books = len(books)
+    read_books = len([book for book in books if book['read']])
+    
+    print("\nЧитательский вызов:")
+    print("-" * 30)
+    print(f"Прочитано книг: {read_books}/{total_books}")
+    
+    if read_books < total_books:
+        progress = (read_books / total_books) * 100
+        print(f"Прогресс: {progress:.1f}%")
+        print(f"Осталось прочитать: {total_books - read_books} книг")
+        
+        # Предлагаем цель
+        if progress < 50:
+            print("Цель: прочитать половину библиотеки!")
+        elif progress < 75:
+            print("Цель: прочитать 75% библиотеки!")
+        else:
+            print("Цель: завершить чтение всей библиотеки!")
+    else:
+        print("Поздравляем! Вы завершили чтение всей библиотеки!")
+
+def main():
+    print("Добро пожаловать в систему учета домашней библиотеки!")
+    
+    # Тестовые данные
+    books.extend([
+        {'id': 1, 'title': 'Мастер и Маргарита', 'author': 'Михаил Булгаков', 'year': '1966', 'genre': 'Роман', 'read': True, 'rating': 5},
+        {'id': 2, 'title': '1984', 'author': 'Джордж Оруэлл', 'year': '1949', 'genre': 'Антиутопия', 'read': True, 'rating': 4},
+        {'id': 3, 'title': 'Скотный двор', 'author': 'Джордж Оруэлл', 'year': '1945', 'genre': 'Сатира', 'read': False},
+        {'id': 4, 'title': 'Преступление и наказание', 'author': 'Федор Достоевский', 'year': '1866', 'genre': 'Роман', 'read': False},
+        {'id': 5, 'title': 'Братья Карамазовы', 'author': 'Федор Достоевский', 'year': '1880', 'genre': 'Роман', 'read': False}
+    ])
+    
+    # Демонстрация рекомендаций
+    get_recommendations()
+    show_random_book()
+    show_reading_challenge()    
