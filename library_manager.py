@@ -531,3 +531,52 @@ def main():
     get_recommendations()
     show_random_book()
     show_reading_challenge()    
+
+def show_main_menu():
+    """Показывает главное меню программы"""
+    print("\n" + "="*50)
+    print("       СИСТЕМА УЧЕТА ДОМАШНЕЙ БИБЛИОТЕКИ")
+    print("="*50)
+    print("1. Показать все книги")
+    print("2. Добавить книгу")
+    print("3. Редактировать книгу")
+    print("4. Удалить книгу")
+    print("5. Отметить как прочитанную")
+    print("6. Поиск книг")
+    print("7. Фильтр книг")
+    print("8. Статистика")
+    print("9. Рейтинги и отзывы")
+    print("10. Рекомендации")
+    print("11. Выход")
+    print("="*50)
+
+def get_menu_choice():
+    """Получает и проверяет выбор пользователя"""
+    try:
+        choice = int(input("\nВыберите действие (1-11): "))
+        return choice
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите число от 1 до 11!")
+        return -1
+
+def initialize_sample_data():
+    """Инициализирует примеры книг для демонстрации"""
+    sample_books = [
+        {'id': 1, 'title': 'Мастер и Маргарита', 'author': 'Михаил Булгаков', 'year': '1966', 'genre': 'Роман', 'read': True, 'rating': 5, 'review': 'Шедевр мировой литературы'},
+        {'id': 2, 'title': '1984', 'author': 'Джордж Оруэлл', 'year': '1949', 'genre': 'Антиутопия', 'read': True, 'rating': 4},
+        {'id': 3, 'title': 'Скотный двор', 'author': 'Джордж Оруэлл', 'year': '1945', 'genre': 'Сатира', 'read': False},
+        {'id': 4, 'title': 'Преступление и наказание', 'author': 'Федор Достоевский', 'year': '1866', 'genre': 'Роман', 'read': False},
+        {'id': 5, 'title': 'Война и мир', 'author': 'Лев Толстой', 'year': '1869', 'genre': 'Роман', 'read': False}
+    ]
+    books.extend(sample_books)
+
+def main():
+    print("Добро пожаловать в систему учета домашней библиотеки!")
+    
+    # Загружаем примеры данных
+    initialize_sample_data()
+    
+    # Демонстрируем меню
+    show_main_menu()
+    choice = get_menu_choice()
+    print(f"Вы выбрали: {choice}")    
