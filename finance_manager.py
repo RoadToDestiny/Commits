@@ -135,3 +135,54 @@ def main():
     add_income()
     add_expense()
     show_balance()    
+
+def show_transactions():
+    """Показывает историю всех операций"""
+    if not transactions:
+        print("История операций пуста!")
+        return
+    
+    print("\nИстория операций:")
+    print("-" * 80)
+    print(f"{'ID':<3} {'Дата':<12} {'Тип':<8} {'Категория':<12} {'Сумма':<10} {'Описание'}")
+    print("-" * 80)
+    
+    for transaction in transactions:
+        transaction_type = "Доход" if transaction['type'] == 'income' else "Расход"
+        amount_sign = "+" if transaction['type'] == 'income' else "-"
+        print(f"{transaction['id']:<3} {transaction['date']:<12} {transaction_type:<8} "
+              f"{transaction['category']:<12} {amount_sign}{transaction['amount']:<9.2f} {transaction['description']}")
+    
+    print("-" * 80)
+
+def show_recent_transactions():
+    """Показывает последние 5 операций"""
+    if not transactions:
+        print("История операций пуста!")
+        return
+    
+    print("\nПоследние операции:")
+    print("-" * 60)
+    
+    recent_transactions = transactions[-5:]  # Последние 5 операций
+    
+    for transaction in recent_transactions:
+        transaction_type = "Доход" if transaction['type'] == 'income' else "Расход"
+        amount_sign = "+" if transaction['type'] == 'income' else "-"
+        print(f"{transaction['date']} | {transaction_type} | {transaction['category']} | "
+              f"{amount_sign}{transaction['amount']:.2f} руб. | {transaction['description']}")
+
+def main():
+    print("Добро пожаловать в систему учета личных финансов!")
+    
+    # Тестовые данные
+    transactions.extend([
+        {'id': 1, 'type': 'income', 'amount': 50000, 'description': 'Зарплата', 'category': 'Доход', 'date': '2024-01-01'},
+        {'id': 2, 'type': 'expense', 'amount': 1500, 'description': 'Продукты', 'category': 'Еда', 'date': '2024-01-02'},
+        {'id': 3, 'type': 'expense', 'amount': 500, 'description': 'Бензин', 'category': 'Транспорт', 'date': '2024-01-02'}
+    ])
+    
+    # Демонстрация новых функций
+    show_transactions()
+    show_recent_transactions()
+    show_balance()
