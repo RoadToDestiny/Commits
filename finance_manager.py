@@ -186,3 +186,93 @@ def main():
     show_transactions()
     show_recent_transactions()
     show_balance()
+
+def show_financial_statistics():
+    """Показывает финансовую статистику"""
+    if not transactions:
+        print("Нет данных для статистики!")
+        return
+    
+    total_income = sum(t['amount'] for t in transactions if t['type'] == 'income')
+    total_expenses = sum(t['amount'] for t in transactions if t['type'] == 'expense')
+    net_income = total_income - total_expenses
+    
+    print("\nФинансовая статистика:")
+    print("-" * 30)
+    print(f"Общий доход: {total_income:.2f} руб.")
+    print(f"Общие расходы: {total_expenses:.2f} руб.")
+    print(f"Чистый доход: {net_income:.2f} руб.")
+    
+    if total_income > 0:
+        savings_rate = (net_income / total_income) * 100
+        print(f"Норма сбережений: {savings_rate:.1f}%")
+
+def show_expenses_by_category():
+    """Показывает расходы по категориям"""
+    expenses_by_category = {}
+    
+    for transaction in transactions:
+        if transaction['type'] == 'expense':
+            category = transaction['category']
+            if category in expenses_by_category:
+                expenses_by_category[category] += transaction['amount']
+            else:
+                expenses_by_category[category] = transaction['amount']
+    
+    if not expenses_by_category:
+        print("Нет данных о расходах!")
+        return
+    
+    total_expenses = sum(expenses_by_category.values())
+    
+    print("\nРасходы по категориям:")
+    print("-" * 40)
+    
+    for category, amount in sorted(expenses_by_category.items(), key=lambda x: x[1], reverse=True):
+        percentage = (amount / total_expenses) * 100 if total_expenses > 0 else 0
+        print(f"{category:<15} {amount:>8.2f} руб. ({percentage:>5.1f}%)")
+
+def show_income_vs_expenses():
+    """Сравнивает доходы и расходы"""
+    monthly_data = {}
+    
+    for transaction in transactions:
+        month = transaction['date'][:7]  # Год-месяц
+        
+        if month not in monthly_data:
+            monthly_data[month] = {'income': 0, 'expenses': 0}
+        
+        if transaction['type'] == 'income':
+            monthly_data[month]['income'] += transaction['amount']
+        else:
+            monthly_data[month]['expenses'] += transaction['amount']
+    
+    if not monthly_data:
+        print("Нет данных для анализа!")
+        return
+    
+    print("\nДоходы vs Расходы по месяцам:")
+    print("-" * 50)
+    print(f"{'Месяц':<12} {'Доходы':<12} {'Расходы':<12} {'Баланс':<12}")
+    print("-" * 50)
+    
+    for month, data in sorted(monthly_data.items()):
+        month_balance = data['income'] - data['expenses']
+        print(f"{month:<12} {data['income']:<12.2f} {data['expenses']:<12.2f} {month_balance:<12.2f}")
+
+def main():
+    print("Добро пожаловать в систему учета личных финансов!")
+    
+    # Тестовые данные для статистики
+    transactions.extend([
+        {'id': 1, 'type': 'income', 'amount': 50000, 'description': 'Зарплата', 'category': 'Доход', 'date': '2024-01-01'},
+        {'id': 2, 'type': 'expense', 'amount': 15000, 'description': 'Продукты', 'category': 'Еда', 'date': '2024-01-02'},
+        {'id': 3, 'type': 'expense', 'amount': 5000, 'description': 'Бензин', 'category': 'Транспорт', 'date': '2024-01-02'},
+        {'id': 4, 'type': 'expense', 'amount': 3000, 'description': 'Кино', 'category': 'Развлечения', 'date': '2024-01-03'},
+        {'id': 5, 'type': 'income', 'amount': 20000, 'description': 'Фриланс', 'category': 'Доход', 'date': '2024-02-01'}
+    ])
+    
+    # Демонстрация статистики
+    show_financial_statistics()
+    show_expenses_by_category()
+    show_income_vs_expenses()
