@@ -276,3 +276,91 @@ def main():
     show_financial_statistics()
     show_expenses_by_category()
     show_income_vs_expenses()
+
+def set_budget():
+    """Устанавливает бюджет для категории"""
+    print("\nУстановка бюджета:")
+    print("Категории для бюджета:")
+    for i, category in enumerate(categories, 1):
+        print(f"   {i}. {category}")
+    
+    try:
+        category_choice = int(input("Выберите категорию (номер): ")) - 1
+        
+        if 0 <= category_choice < len(categories):
+            category = categories[category_choice]
+            amount = float(input(f"Введите бюджет для категории '{category}': "))
+            
+            if amount < 0:
+                print("Ошибка: Бюджет не может быть отрицательным!")
+                return
+            
+            budgets[category] = amount
+            print(f"Бюджет для категории '{category}' установлен: {amount:.2f} руб.")
+        else:
+            print("Ошибка: Неверный выбор категории!")
+            
+    except (ValueError, IndexError):
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def show_budget_status():
+    """Показывает статус бюджетов"""
+    if not budgets:
+        print("Бюджеты не установлены!")
+        return
+    
+    print("\nСтатус бюджетов:")
+    print("-" * 50)
+    print(f"{'Категория':<15} {'Бюджет':<12} {'Потрачено':<12} {'Остаток':<12} {'%'}")
+    print("-" * 50)
+    
+    for category, budget_amount in budgets.items():
+        spent = sum(t['amount'] for t in transactions 
+                   if t['type'] == 'expense' and t['category'] == category)
+        remaining = budget_amount - spent
+        percentage = (spent / budget_amount) * 100 if budget_amount > 0 else 0
+        
+        status = "ПРЕВЫШЕН" if spent > budget_amount else "В НОРМЕ"
+        print(f"{category:<15} {budget_amount:<12.2f} {spent:<12.2f} {remaining:<12.2f} {percentage:>5.1f}% {status}")
+
+def check_budget_alerts():
+    """Проверяет и показывает предупреждения о бюджетах"""
+    if not budgets:
+        return
+    
+    alerts = []
+    
+    for category, budget_amount in budgets.items():
+        spent = sum(t['amount'] for t in transactions 
+                   if t['type'] == 'expense' and t['category'] == category)
+        percentage = (spent / budget_amount) * 100 if budget_amount > 0 else 0
+        
+        if percentage >= 90:
+            alerts.append(f"Внимание! Бюджет категории '{category}' почти исчерпан ({percentage:.1f}%)")
+        if spent > budget_amount:
+            alerts.append(f"ПРЕВЫШЕНИЕ! Бюджет категории '{category}' превышен на {spent - budget_amount:.2f} руб.")
+    
+    if alerts:
+        print("\nПредупреждения о бюджетах:")
+        for alert in alerts:
+            print(f"   ⚠ {alert}")
+
+def main():
+    print("Добро пожаловать в систему учета личных финансов!")
+    
+    # Тестовые данные
+    transactions.extend([
+        {'id': 1, 'type': 'income', 'amount': 50000, 'description': 'Зарплата', 'category': 'Доход', 'date': '2024-01-01'},
+        {'id': 2, 'type': 'expense', 'amount': 15000, 'description': 'Продукты', 'category': 'Еда', 'date': '2024-01-02'},
+        {'id': 3, 'type': 'expense', 'amount': 5000, 'description': 'Бензин', 'category': 'Транспорт', 'date': '2024-01-02'}
+    ])
+    
+    # Устанавливаем тестовые бюджеты
+    budgets['Еда'] = 20000
+    budgets['Транспорт'] = 8000
+    
+    # Демонстрация системы бюджетов
+    set_budget()
+    show_budget_status()
+    check_budget_alerts()
+    
