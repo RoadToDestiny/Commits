@@ -363,4 +363,133 @@ def main():
     set_budget()
     show_budget_status()
     check_budget_alerts()
+
+def add_savings_goal():
+    """Добавляет цель сбережений"""
+    name = input("Введите название цели: ")
     
+    try:
+        target_amount = float(input("Введите целевую сумму: "))
+        current_amount = float(input("Введите текущую сумму (если есть): ") or "0")
+        
+        if target_amount <= 0:
+            print("Ошибка: Целевая сумма должна быть положительной!")
+            return
+        
+        goal = {
+            'id': len(savings_goals) + 1,
+            'name': name,
+            'target_amount': target_amount,
+            'current_amount': current_amount,
+            'created_date': '2024-01-01'
+        }
+        
+        savings_goals.append(goal)
+        print(f"Цель '{name}' добавлена!")
+        
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректную сумму!")
+
+def show_savings_goals():
+    """Показывает все цели сбережений"""
+    if not savings_goals:
+        print("Цели сбережений не установлены!")
+        return
+    
+    print("\nЦели сбережений:")
+    print("-" * 60)
+    
+    for goal in savings_goals:
+        progress = (goal['current_amount'] / goal['target_amount']) * 100
+        remaining = goal['target_amount'] - goal['current_amount']
+        
+        print(f"{goal['id']}. {goal['name']}")
+        print(f"   Цель: {goal['target_amount']:.2f} руб.")
+        print(f"   Накоплено: {goal['current_amount']:.2f} руб.")
+        print(f"   Осталось: {remaining:.2f} руб.")
+        print(f"   Прогресс: {progress:.1f}%")
+        print()
+
+def contribute_to_goal():
+    """Пополняет цель сбережений"""
+    if not savings_goals:
+        print("Нет целей сбережений!")
+        return
+    
+    show_savings_goals()
+    
+    try:
+        goal_id = int(input("Введите ID цели: "))
+        amount = float(input("Введите сумму для пополнения: "))
+        
+        if amount <= 0:
+            print("Ошибка: Сумма должна быть положительной!")
+            return
+        
+        for goal in savings_goals:
+            if goal['id'] == goal_id:
+                if amount > balance:
+                    print("Ошибка: Недостаточно средств на балансе!")
+                    return
+                
+                goal['current_amount'] += amount
+                balance -= amount
+                
+                # Добавляем транзакцию
+                transaction = {
+                    'id': len(transactions) + 1,
+                    'type': 'expense',
+                    'amount': amount,
+                    'description': f"Пополнение цели: {goal['name']}",
+                    'category': 'Сбережения',
+                    'date': '2024-01-01'
+                }
+                transactions.append(transaction)
+                
+                print(f"Цель '{goal['name']}' пополнена на {amount:.2f} руб.!")
+                return
+        
+        print(f"Ошибка: Цель с ID {goal_id} не найдена!")
+        
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def show_financial_health():
+    """Показывает общее финансовое здоровье"""
+    total_income = sum(t['amount'] for t in transactions if t['type'] == 'income')
+    total_expenses = sum(t['amount'] for t in transactions if t['type'] == 'expense')
+    net_income = total_income - total_expenses
+    
+    total_savings = sum(goal['current_amount'] for goal in savings_goals)
+    
+    print("\nФинансовое здоровье:")
+    print("-" * 30)
+    print(f"Текущий баланс: {balance:.2f} руб.")
+    print(f"Всего сбережений: {total_savings:.2f} руб.")
+    print(f"Общий капитал: {balance + total_savings:.2f} руб.")
+    
+    if total_income > 0:
+        savings_rate = (net_income / total_income) * 100
+        print(f"Норма сбережений: {savings_rate:.1f}%")
+        
+        if savings_rate >= 20:
+            print("Статус: Отличные сбережения!")
+        elif savings_rate >= 10:
+            print("Статус: Хорошие сбережения")
+        else:
+            print("Статус: Нужно увеличить сбережения")
+
+def main():
+    print("Добро пожаловать в систему учета личных финансов!")
+    
+    # Тестовые данные
+    balance = 50000
+    savings_goals.extend([
+        {'id': 1, 'name': 'Новый ноутбук', 'target_amount': 80000, 'current_amount': 25000, 'created_date': '2024-01-01'},
+        {'id': 2, 'name': 'Отпуск', 'target_amount': 50000, 'current_amount': 10000, 'created_date': '2024-01-01'}
+    ])
+    
+    # Демонстрация целей сбережений
+    add_savings_goal()
+    show_savings_goals()
+    show_financial_health()    
