@@ -638,3 +638,202 @@ def main():
     analyze_spending_patterns()
     generate_monthly_report()
     show_financial_tips()
+
+def analyze_spending_patterns():
+    """Анализирует patterns расходов"""
+    if not transactions:
+        print("Нет данных для анализа!")
+        return
+    
+    expenses = [t for t in transactions if t['type'] == 'expense']
+    
+    if not expenses:
+        print("Нет данных о расходах!")
+        return
+    
+    # Анализ по категориям
+    category_totals = {}
+    for expense in expenses:
+        category = expense['category']
+        if category in category_totals:
+            category_totals[category] += expense['amount']
+        else:
+            category_totals[category] = expense['amount']
+    
+    print("\nАнализ расходов по категориям:")
+    print("-" * 40)
+    total_expenses = sum(category_totals.values())
+    
+    for category, amount in sorted(category_totals.items(), key=lambda x: x[1], reverse=True):
+        percentage = (amount / total_expenses) * 100
+        print(f"{category:<15} {amount:>8.2f} руб. ({percentage:>5.1f}%)")
+    
+    # Самые крупные расходы
+    large_expenses = sorted(expenses, key=lambda x: x['amount'], reverse=True)[:5]
+    
+    print(f"\nСамые крупные расходы:")
+    print("-" * 50)
+    for expense in large_expenses:
+        print(f"{expense['date']} | {expense['category']} | {expense['amount']:.2f} руб. | {expense['description']}")
+
+def generate_monthly_report():
+    """Генерирует месячный отчет"""
+    if not transactions:
+        print("Нет данных для отчета!")
+        return
+    
+    try:
+        month = input("Введите месяц в формате ГГГГ-ММ (например, 2024-01): ")
+        
+        monthly_transactions = [t for t in transactions if t['date'].startswith(month)]
+        
+        if not monthly_transactions:
+            print(f"Нет данных за {month}!")
+            return
+        
+        monthly_income = sum(t['amount'] for t in monthly_transactions if t['type'] == 'income')
+        monthly_expenses = sum(t['amount'] for t in monthly_transactions if t['type'] == 'expense')
+        monthly_balance = monthly_income - monthly_expenses
+        
+        print(f"\nОтчет за {month}:")
+        print("=" * 50)
+        print(f"Доходы: {monthly_income:.2f} руб.")
+        print(f"Расходы: {monthly_expenses:.2f} руб.")
+        print(f"Баланс: {monthly_balance:.2f} руб.")
+        
+        if monthly_income > 0:
+            savings_rate = (monthly_balance / monthly_income) * 100
+            print(f"Норма сбережений: {savings_rate:.1f}%")
+        
+        # Расходы по категориям за месяц
+        monthly_expenses_by_category = {}
+        for transaction in monthly_transactions:
+            if transaction['type'] == 'expense':
+                category = transaction['category']
+                if category in monthly_expenses_by_category:
+                    monthly_expenses_by_category[category] += transaction['amount']
+                else:
+                    monthly_expenses_by_category[category] = transaction['amount']
+        
+        if monthly_expenses_by_category:
+            print(f"\nРасходы по категориям:")
+            for category, amount in sorted(monthly_expenses_by_category.items(), key=lambda x: x[1], reverse=True):
+                percentage = (amount / monthly_expenses) * 100 if monthly_expenses > 0 else 0
+                print(f"   {category:<15} {amount:>8.2f} руб. ({percentage:>5.1f}%)")
+        
+    except ValueError:
+        print("Ошибка: Неверный формат месяца!")
+
+def show_financial_tips():
+    """Показывает финансовые советы на основе анализа"""
+    if not transactions:
+        print("Недостаточно данных для советов!")
+        return
+    
+    total_income = sum(t['amount'] for t in transactions if t['type'] == 'income')
+    total_expenses = sum(t['amount'] for t in transactions if t['type'] == 'expense')
+    
+    if total_income == 0:
+        return
+    
+    savings_rate = ((total_income - total_expenses) / total_income) * 100
+    
+    print("\nФинансовые советы:")
+    print("-" * 40)
+    
+    tips = []
+    
+    if savings_rate < 10:
+        tips.append("Совет: Попробуйте увеличить норму сбережений до 10-20%")
+    
+    # Анализ категорий расходов
+    expenses_by_category = {}
+    for transaction in transactions:
+        if transaction['type'] == 'expense':
+            category = transaction['category']
+            if category in expenses_by_category:
+                expenses_by_category[category] += transaction['amount']
+            else:
+                expenses_by_category[category] = transaction['amount']
+    
+    if 'Развлечения' in expenses_by_category:
+        entertainment_pct = (expenses_by_category['Развлечения'] / total_expenses) * 100
+        if entertainment_pct > 30:
+            tips.append("Совет: Слишком высокие расходы на развлечения - рассмотрите оптимизацию")
+    
+    if not tips:
+        tips.append("Ваши финансы выглядят хорошо! Продолжайте в том же духе.")
+    
+    for tip in tips:
+        print(f"   • {tip}")
+
+def main():
+    print("Добро пожаловать в систему учета личных финансов!")
+    
+    # Тестовые данные для анализа
+    transactions.extend([
+        {'id': 1, 'type': 'income', 'amount': 50000, 'description': 'Зарплата', 'category': 'Доход', 'date': '2024-01-01'},
+        {'id': 2, 'type': 'expense', 'amount': 15000, 'description': 'Продукты', 'category': 'Еда', 'date': '2024-01-02'},
+        {'id': 3, 'type': 'expense', 'amount': 5000, 'description': 'Бензин', 'category': 'Транспорт', 'date': '2024-01-02'},
+        {'id': 4, 'type': 'expense', 'amount': 8000, 'description': 'Ресторан', 'category': 'Развлечения', 'date': '2024-01-03'},
+        {'id': 5, 'type': 'expense', 'amount': 3000, 'description': 'Кино', 'category': 'Развлечения', 'date': '2024-01-04'}
+    ])
+    
+    # Демонстрация анализа и отчетов
+    analyze_spending_patterns()
+    generate_monthly_report()
+    show_financial_tips()
+
+def show_main_menu():
+    """Показывает главное меню программы"""
+    print("\n" + "="*50)
+    print("       СИСТЕМА УЧЕТА ЛИЧНЫХ ФИНАНСОВ")
+    print("="*50)
+    print("1. Показать баланс")
+    print("2. Добавить доход")
+    print("3. Добавить расход")
+    print("4. История операций")
+    print("5. Финансовая статистика")
+    print("6. Управление бюджетами")
+    print("7. Цели сбережений")
+    print("8. Анализ и отчеты")
+    print("9. Финансовые советы")
+    print("10. Выход")
+    print("="*50)
+
+def get_menu_choice():
+    """Получает и проверяет выбор пользователя"""
+    try:
+        choice = int(input("\nВыберите действие (1-10): "))
+        return choice
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите число от 1 до 10!")
+        return -1
+
+def initialize_sample_data():
+    """Инициализирует примеры данных для демонстрации"""
+    sample_transactions = [
+        {'id': 1, 'type': 'income', 'amount': 50000, 'description': 'Зарплата', 'category': 'Доход', 'date': '2024-01-01'},
+        {'id': 2, 'type': 'expense', 'amount': 15000, 'description': 'Продукты', 'category': 'Еда', 'date': '2024-01-02'},
+        {'id': 3, 'type': 'expense', 'amount': 5000, 'description': 'Бензин', 'category': 'Транспорт', 'date': '2024-01-02'},
+        {'id': 4, 'type': 'expense', 'amount': 3000, 'description': 'Кино', 'category': 'Развлечения', 'date': '2024-01-03'}
+    ]
+    transactions.extend(sample_transactions)
+    
+    budgets['Еда'] = 20000
+    budgets['Транспорт'] = 8000
+    
+    savings_goals.extend([
+        {'id': 1, 'name': 'Новый ноутбук', 'target_amount': 80000, 'current_amount': 25000, 'created_date': '2024-01-01'}
+    ])
+
+def main():
+    print("Добро пожаловать в систему учета личных финансов!")
+    
+    # Загружаем примеры данных
+    initialize_sample_data()
+    
+    # Демонстрируем меню
+    show_main_menu()
+    choice = get_menu_choice()
+    print(f"Вы выбрали: {choice}")
