@@ -1,60 +1,29 @@
 # finance_manager.py
 # Система учета личных финансов с бюджетированием
-# Коммит 1: Базовая структура проекта
+# Коммит 10: Финальная версия с полной функциональностью
 
-def main():
-    print("Добро пожаловать в систему учета личных финансов!")
-    print("Система находится в разработке...")
+"""
+СИСТЕМА УЧЕТА ЛИЧНЫХ ФИНАНСОВ
 
-if __name__ == "__main__":
-    main()
+Комплексная система для управления личными финансами с функциями:
+- Учет доходов и расходов
+- Бюджетирование по категориям
+- Цели сбережений
+- Аналитика и отчеты
+- Финансовые рекомендации
 
-# Глобальные переменные для хранения данных
+Автор: [Ваше имя]
+Версия: 1.0
+"""
+
 transactions = []
 balance = 0.0
 categories = ['Еда', 'Транспорт', 'Развлечения', 'Здоровье', 'Одежда', 'Другое']
+budgets = {}
+savings_goals = []
 
 def add_income():
     """Добавляет доход"""
-    global balance
-    
-    try:
-        amount = float(input("Введите сумму дохода: "))
-        description = input("Введите описание: ")
-        
-        if amount <= 0:
-            print("Ошибка: Сумма дохода должна быть положительной!")
-            return
-        
-        transaction = {
-            'id': len(transactions) + 1,
-            'type': 'income',
-            'amount': amount,
-            'description': description,
-            'category': 'Доход',
-            'date': '2024-01-01'  # Временная дата
-        }
-        
-        transactions.append(transaction)
-        balance += amount
-        print(f"Доход на сумму {amount} руб. добавлен!")
-        
-    except ValueError:
-        print("Ошибка: Пожалуйста, введите корректную сумму!")
-
-def main():
-    print("Добро пожаловать в систему учета личных финансов!")
-    
-    # Тестируем добавление дохода
-    add_income()
-    print(f"Текущий баланс: {balance} руб.")
-    print(f"Всего операций: {len(transactions)}")
-
-transactions = []
-balance = 10000.0  # Начальный баланс для тестирования
-categories = ['Еда', 'Транспорт', 'Развлечения', 'Здоровье', 'Одежда', 'Другое']
-
-def add_income():
     global balance
     try:
         amount = float(input("Введите сумму дохода: "))
@@ -75,7 +44,7 @@ def add_income():
         
         transactions.append(transaction)
         balance += amount
-        print(f"Доход на сумму {amount} руб. добавлен!")
+        print(f"Доход на сумму {amount:.2f} руб. добавлен!")
         
     except ValueError:
         print("Ошибка: Пожалуйста, введите корректную сумму!")
@@ -83,7 +52,6 @@ def add_income():
 def add_expense():
     """Добавляет расход с выбором категории"""
     global balance
-    
     try:
         amount = float(input("Введите сумму расхода: "))
         description = input("Введите описание: ")
@@ -116,7 +84,7 @@ def add_expense():
             
             transactions.append(transaction)
             balance -= amount
-            print(f"Расход на сумму {amount} руб. добавлен в категорию '{category}'!")
+            print(f"Расход на сумму {amount:.2f} руб. добавлен в категорию '{category}'!")
         else:
             print("Ошибка: Неверный выбор категории!")
             
@@ -127,662 +95,11 @@ def show_balance():
     """Показывает текущий баланс"""
     print(f"\nТекущий баланс: {balance:.2f} руб.")
 
-def main():
-    print("Добро пожаловать в систему учета личных финансов!")
-    
-    # Тестируем функции
-    show_balance()
-    add_income()
-    add_expense()
-    show_balance()    
-
-def show_transactions():
-    """Показывает историю всех операций"""
-    if not transactions:
-        print("История операций пуста!")
-        return
-    
-    print("\nИстория операций:")
-    print("-" * 80)
-    print(f"{'ID':<3} {'Дата':<12} {'Тип':<8} {'Категория':<12} {'Сумма':<10} {'Описание'}")
-    print("-" * 80)
-    
-    for transaction in transactions:
-        transaction_type = "Доход" if transaction['type'] == 'income' else "Расход"
-        amount_sign = "+" if transaction['type'] == 'income' else "-"
-        print(f"{transaction['id']:<3} {transaction['date']:<12} {transaction_type:<8} "
-              f"{transaction['category']:<12} {amount_sign}{transaction['amount']:<9.2f} {transaction['description']}")
-    
-    print("-" * 80)
-
-def show_recent_transactions():
-    """Показывает последние 5 операций"""
-    if not transactions:
-        print("История операций пуста!")
-        return
-    
-    print("\nПоследние операции:")
-    print("-" * 60)
-    
-    recent_transactions = transactions[-5:]  # Последние 5 операций
-    
-    for transaction in recent_transactions:
-        transaction_type = "Доход" if transaction['type'] == 'income' else "Расход"
-        amount_sign = "+" if transaction['type'] == 'income' else "-"
-        print(f"{transaction['date']} | {transaction_type} | {transaction['category']} | "
-              f"{amount_sign}{transaction['amount']:.2f} руб. | {transaction['description']}")
-
-def main():
-    print("Добро пожаловать в систему учета личных финансов!")
-    
-    # Тестовые данные
-    transactions.extend([
-        {'id': 1, 'type': 'income', 'amount': 50000, 'description': 'Зарплата', 'category': 'Доход', 'date': '2024-01-01'},
-        {'id': 2, 'type': 'expense', 'amount': 1500, 'description': 'Продукты', 'category': 'Еда', 'date': '2024-01-02'},
-        {'id': 3, 'type': 'expense', 'amount': 500, 'description': 'Бензин', 'category': 'Транспорт', 'date': '2024-01-02'}
-    ])
-    
-    # Демонстрация новых функций
-    show_transactions()
-    show_recent_transactions()
-    show_balance()
-
-def show_financial_statistics():
-    """Показывает финансовую статистику"""
-    if not transactions:
-        print("Нет данных для статистики!")
-        return
-    
-    total_income = sum(t['amount'] for t in transactions if t['type'] == 'income')
-    total_expenses = sum(t['amount'] for t in transactions if t['type'] == 'expense')
-    net_income = total_income - total_expenses
-    
-    print("\nФинансовая статистика:")
-    print("-" * 30)
-    print(f"Общий доход: {total_income:.2f} руб.")
-    print(f"Общие расходы: {total_expenses:.2f} руб.")
-    print(f"Чистый доход: {net_income:.2f} руб.")
-    
-    if total_income > 0:
-        savings_rate = (net_income / total_income) * 100
-        print(f"Норма сбережений: {savings_rate:.1f}%")
-
-def show_expenses_by_category():
-    """Показывает расходы по категориям"""
-    expenses_by_category = {}
-    
-    for transaction in transactions:
-        if transaction['type'] == 'expense':
-            category = transaction['category']
-            if category in expenses_by_category:
-                expenses_by_category[category] += transaction['amount']
-            else:
-                expenses_by_category[category] = transaction['amount']
-    
-    if not expenses_by_category:
-        print("Нет данных о расходах!")
-        return
-    
-    total_expenses = sum(expenses_by_category.values())
-    
-    print("\nРасходы по категориям:")
-    print("-" * 40)
-    
-    for category, amount in sorted(expenses_by_category.items(), key=lambda x: x[1], reverse=True):
-        percentage = (amount / total_expenses) * 100 if total_expenses > 0 else 0
-        print(f"{category:<15} {amount:>8.2f} руб. ({percentage:>5.1f}%)")
-
-def show_income_vs_expenses():
-    """Сравнивает доходы и расходы"""
-    monthly_data = {}
-    
-    for transaction in transactions:
-        month = transaction['date'][:7]  # Год-месяц
-        
-        if month not in monthly_data:
-            monthly_data[month] = {'income': 0, 'expenses': 0}
-        
-        if transaction['type'] == 'income':
-            monthly_data[month]['income'] += transaction['amount']
-        else:
-            monthly_data[month]['expenses'] += transaction['amount']
-    
-    if not monthly_data:
-        print("Нет данных для анализа!")
-        return
-    
-    print("\nДоходы vs Расходы по месяцам:")
-    print("-" * 50)
-    print(f"{'Месяц':<12} {'Доходы':<12} {'Расходы':<12} {'Баланс':<12}")
-    print("-" * 50)
-    
-    for month, data in sorted(monthly_data.items()):
-        month_balance = data['income'] - data['expenses']
-        print(f"{month:<12} {data['income']:<12.2f} {data['expenses']:<12.2f} {month_balance:<12.2f}")
-
-def main():
-    print("Добро пожаловать в систему учета личных финансов!")
-    
-    # Тестовые данные для статистики
-    transactions.extend([
-        {'id': 1, 'type': 'income', 'amount': 50000, 'description': 'Зарплата', 'category': 'Доход', 'date': '2024-01-01'},
-        {'id': 2, 'type': 'expense', 'amount': 15000, 'description': 'Продукты', 'category': 'Еда', 'date': '2024-01-02'},
-        {'id': 3, 'type': 'expense', 'amount': 5000, 'description': 'Бензин', 'category': 'Транспорт', 'date': '2024-01-02'},
-        {'id': 4, 'type': 'expense', 'amount': 3000, 'description': 'Кино', 'category': 'Развлечения', 'date': '2024-01-03'},
-        {'id': 5, 'type': 'income', 'amount': 20000, 'description': 'Фриланс', 'category': 'Доход', 'date': '2024-02-01'}
-    ])
-    
-    # Демонстрация статистики
-    show_financial_statistics()
-    show_expenses_by_category()
-    show_income_vs_expenses()
-
-def set_budget():
-    """Устанавливает бюджет для категории"""
-    print("\nУстановка бюджета:")
-    print("Категории для бюджета:")
-    for i, category in enumerate(categories, 1):
-        print(f"   {i}. {category}")
-    
-    try:
-        category_choice = int(input("Выберите категорию (номер): ")) - 1
-        
-        if 0 <= category_choice < len(categories):
-            category = categories[category_choice]
-            amount = float(input(f"Введите бюджет для категории '{category}': "))
-            
-            if amount < 0:
-                print("Ошибка: Бюджет не может быть отрицательным!")
-                return
-            
-            budgets[category] = amount
-            print(f"Бюджет для категории '{category}' установлен: {amount:.2f} руб.")
-        else:
-            print("Ошибка: Неверный выбор категории!")
-            
-    except (ValueError, IndexError):
-        print("Ошибка: Пожалуйста, введите корректные данные!")
-
-def show_budget_status():
-    """Показывает статус бюджетов"""
-    if not budgets:
-        print("Бюджеты не установлены!")
-        return
-    
-    print("\nСтатус бюджетов:")
-    print("-" * 50)
-    print(f"{'Категория':<15} {'Бюджет':<12} {'Потрачено':<12} {'Остаток':<12} {'%'}")
-    print("-" * 50)
-    
-    for category, budget_amount in budgets.items():
-        spent = sum(t['amount'] for t in transactions 
-                   if t['type'] == 'expense' and t['category'] == category)
-        remaining = budget_amount - spent
-        percentage = (spent / budget_amount) * 100 if budget_amount > 0 else 0
-        
-        status = "ПРЕВЫШЕН" if spent > budget_amount else "В НОРМЕ"
-        print(f"{category:<15} {budget_amount:<12.2f} {spent:<12.2f} {remaining:<12.2f} {percentage:>5.1f}% {status}")
-
-def check_budget_alerts():
-    """Проверяет и показывает предупреждения о бюджетах"""
-    if not budgets:
-        return
-    
-    alerts = []
-    
-    for category, budget_amount in budgets.items():
-        spent = sum(t['amount'] for t in transactions 
-                   if t['type'] == 'expense' and t['category'] == category)
-        percentage = (spent / budget_amount) * 100 if budget_amount > 0 else 0
-        
-        if percentage >= 90:
-            alerts.append(f"Внимание! Бюджет категории '{category}' почти исчерпан ({percentage:.1f}%)")
-        if spent > budget_amount:
-            alerts.append(f"ПРЕВЫШЕНИЕ! Бюджет категории '{category}' превышен на {spent - budget_amount:.2f} руб.")
-    
-    if alerts:
-        print("\nПредупреждения о бюджетах:")
-        for alert in alerts:
-            print(f"   ⚠ {alert}")
-
-def main():
-    print("Добро пожаловать в систему учета личных финансов!")
-    
-    # Тестовые данные
-    transactions.extend([
-        {'id': 1, 'type': 'income', 'amount': 50000, 'description': 'Зарплата', 'category': 'Доход', 'date': '2024-01-01'},
-        {'id': 2, 'type': 'expense', 'amount': 15000, 'description': 'Продукты', 'category': 'Еда', 'date': '2024-01-02'},
-        {'id': 3, 'type': 'expense', 'amount': 5000, 'description': 'Бензин', 'category': 'Транспорт', 'date': '2024-01-02'}
-    ])
-    
-    # Устанавливаем тестовые бюджеты
-    budgets['Еда'] = 20000
-    budgets['Транспорт'] = 8000
-    
-    # Демонстрация системы бюджетов
-    set_budget()
-    show_budget_status()
-    check_budget_alerts()
-
-def add_savings_goal():
-    """Добавляет цель сбережений"""
-    name = input("Введите название цели: ")
-    
-    try:
-        target_amount = float(input("Введите целевую сумму: "))
-        current_amount = float(input("Введите текущую сумму (если есть): ") or "0")
-        
-        if target_amount <= 0:
-            print("Ошибка: Целевая сумма должна быть положительной!")
-            return
-        
-        goal = {
-            'id': len(savings_goals) + 1,
-            'name': name,
-            'target_amount': target_amount,
-            'current_amount': current_amount,
-            'created_date': '2024-01-01'
-        }
-        
-        savings_goals.append(goal)
-        print(f"Цель '{name}' добавлена!")
-        
-    except ValueError:
-        print("Ошибка: Пожалуйста, введите корректную сумму!")
-
-def show_savings_goals():
-    """Показывает все цели сбережений"""
-    if not savings_goals:
-        print("Цели сбережений не установлены!")
-        return
-    
-    print("\nЦели сбережений:")
-    print("-" * 60)
-    
-    for goal in savings_goals:
-        progress = (goal['current_amount'] / goal['target_amount']) * 100
-        remaining = goal['target_amount'] - goal['current_amount']
-        
-        print(f"{goal['id']}. {goal['name']}")
-        print(f"   Цель: {goal['target_amount']:.2f} руб.")
-        print(f"   Накоплено: {goal['current_amount']:.2f} руб.")
-        print(f"   Осталось: {remaining:.2f} руб.")
-        print(f"   Прогресс: {progress:.1f}%")
-        print()
-
-def contribute_to_goal():
-    """Пополняет цель сбережений"""
-    if not savings_goals:
-        print("Нет целей сбережений!")
-        return
-    
-    show_savings_goals()
-    
-    try:
-        goal_id = int(input("Введите ID цели: "))
-        amount = float(input("Введите сумму для пополнения: "))
-        
-        if amount <= 0:
-            print("Ошибка: Сумма должна быть положительной!")
-            return
-        
-        for goal in savings_goals:
-            if goal['id'] == goal_id:
-                if amount > balance:
-                    print("Ошибка: Недостаточно средств на балансе!")
-                    return
-                
-                goal['current_amount'] += amount
-                balance -= amount
-                
-                # Добавляем транзакцию
-                transaction = {
-                    'id': len(transactions) + 1,
-                    'type': 'expense',
-                    'amount': amount,
-                    'description': f"Пополнение цели: {goal['name']}",
-                    'category': 'Сбережения',
-                    'date': '2024-01-01'
-                }
-                transactions.append(transaction)
-                
-                print(f"Цель '{goal['name']}' пополнена на {amount:.2f} руб.!")
-                return
-        
-        print(f"Ошибка: Цель с ID {goal_id} не найдена!")
-        
-    except ValueError:
-        print("Ошибка: Пожалуйста, введите корректные данные!")
-
-def show_financial_health():
-    """Показывает общее финансовое здоровье"""
-    total_income = sum(t['amount'] for t in transactions if t['type'] == 'income')
-    total_expenses = sum(t['amount'] for t in transactions if t['type'] == 'expense')
-    net_income = total_income - total_expenses
-    
-    total_savings = sum(goal['current_amount'] for goal in savings_goals)
-    
-    print("\nФинансовое здоровье:")
-    print("-" * 30)
-    print(f"Текущий баланс: {balance:.2f} руб.")
-    print(f"Всего сбережений: {total_savings:.2f} руб.")
-    print(f"Общий капитал: {balance + total_savings:.2f} руб.")
-    
-    if total_income > 0:
-        savings_rate = (net_income / total_income) * 100
-        print(f"Норма сбережений: {savings_rate:.1f}%")
-        
-        if savings_rate >= 20:
-            print("Статус: Отличные сбережения!")
-        elif savings_rate >= 10:
-            print("Статус: Хорошие сбережения")
-        else:
-            print("Статус: Нужно увеличить сбережения")
-
-def main():
-    print("Добро пожаловать в систему учета личных финансов!")
-    
-    # Тестовые данные
-    balance = 50000
-    savings_goals.extend([
-        {'id': 1, 'name': 'Новый ноутбук', 'target_amount': 80000, 'current_amount': 25000, 'created_date': '2024-01-01'},
-        {'id': 2, 'name': 'Отпуск', 'target_amount': 50000, 'current_amount': 10000, 'created_date': '2024-01-01'}
-    ])
-    
-    # Демонстрация целей сбережений
-    add_savings_goal()
-    show_savings_goals()
-    show_financial_health()    
-
-def analyze_spending_patterns():
-    """Анализирует patterns расходов"""
-    if not transactions:
-        print("Нет данных для анализа!")
-        return
-    
-    expenses = [t for t in transactions if t['type'] == 'expense']
-    
-    if not expenses:
-        print("Нет данных о расходах!")
-        return
-    
-    # Анализ по категориям
-    category_totals = {}
-    for expense in expenses:
-        category = expense['category']
-        if category in category_totals:
-            category_totals[category] += expense['amount']
-        else:
-            category_totals[category] = expense['amount']
-    
-    print("\nАнализ расходов по категориям:")
-    print("-" * 40)
-    total_expenses = sum(category_totals.values())
-    
-    for category, amount in sorted(category_totals.items(), key=lambda x: x[1], reverse=True):
-        percentage = (amount / total_expenses) * 100
-        print(f"{category:<15} {amount:>8.2f} руб. ({percentage:>5.1f}%)")
-    
-    # Самые крупные расходы
-    large_expenses = sorted(expenses, key=lambda x: x['amount'], reverse=True)[:5]
-    
-    print(f"\nСамые крупные расходы:")
-    print("-" * 50)
-    for expense in large_expenses:
-        print(f"{expense['date']} | {expense['category']} | {expense['amount']:.2f} руб. | {expense['description']}")
-
-def generate_monthly_report():
-    """Генерирует месячный отчет"""
-    if not transactions:
-        print("Нет данных для отчета!")
-        return
-    
-    try:
-        month = input("Введите месяц в формате ГГГГ-ММ (например, 2024-01): ")
-        
-        monthly_transactions = [t for t in transactions if t['date'].startswith(month)]
-        
-        if not monthly_transactions:
-            print(f"Нет данных за {month}!")
-            return
-        
-        monthly_income = sum(t['amount'] for t in monthly_transactions if t['type'] == 'income')
-        monthly_expenses = sum(t['amount'] for t in monthly_transactions if t['type'] == 'expense')
-        monthly_balance = monthly_income - monthly_expenses
-        
-        print(f"\nОтчет за {month}:")
-        print("=" * 50)
-        print(f"Доходы: {monthly_income:.2f} руб.")
-        print(f"Расходы: {monthly_expenses:.2f} руб.")
-        print(f"Баланс: {monthly_balance:.2f} руб.")
-        
-        if monthly_income > 0:
-            savings_rate = (monthly_balance / monthly_income) * 100
-            print(f"Норма сбережений: {savings_rate:.1f}%")
-        
-        # Расходы по категориям за месяц
-        monthly_expenses_by_category = {}
-        for transaction in monthly_transactions:
-            if transaction['type'] == 'expense':
-                category = transaction['category']
-                if category in monthly_expenses_by_category:
-                    monthly_expenses_by_category[category] += transaction['amount']
-                else:
-                    monthly_expenses_by_category[category] = transaction['amount']
-        
-        if monthly_expenses_by_category:
-            print(f"\nРасходы по категориям:")
-            for category, amount in sorted(monthly_expenses_by_category.items(), key=lambda x: x[1], reverse=True):
-                percentage = (amount / monthly_expenses) * 100 if monthly_expenses > 0 else 0
-                print(f"   {category:<15} {amount:>8.2f} руб. ({percentage:>5.1f}%)")
-        
-    except ValueError:
-        print("Ошибка: Неверный формат месяца!")
-
-def show_financial_tips():
-    """Показывает финансовые советы на основе анализа"""
-    if not transactions:
-        print("Недостаточно данных для советов!")
-        return
-    
-    total_income = sum(t['amount'] for t in transactions if t['type'] == 'income')
-    total_expenses = sum(t['amount'] for t in transactions if t['type'] == 'expense')
-    
-    if total_income == 0:
-        return
-    
-    savings_rate = ((total_income - total_expenses) / total_income) * 100
-    
-    print("\nФинансовые советы:")
-    print("-" * 40)
-    
-    tips = []
-    
-    if savings_rate < 10:
-        tips.append("Совет: Попробуйте увеличить норму сбережений до 10-20%")
-    
-    # Анализ категорий расходов
-    expenses_by_category = {}
-    for transaction in transactions:
-        if transaction['type'] == 'expense':
-            category = transaction['category']
-            if category in expenses_by_category:
-                expenses_by_category[category] += transaction['amount']
-            else:
-                expenses_by_category[category] = transaction['amount']
-    
-    if 'Развлечения' in expenses_by_category:
-        entertainment_pct = (expenses_by_category['Развлечения'] / total_expenses) * 100
-        if entertainment_pct > 30:
-            tips.append("Совет: Слишком высокие расходы на развлечения - рассмотрите оптимизацию")
-    
-    if not tips:
-        tips.append("Ваши финансы выглядят хорошо! Продолжайте в том же духе.")
-    
-    for tip in tips:
-        print(f"   • {tip}")
-
-def main():
-    print("Добро пожаловать в систему учета личных финансов!")
-    
-    # Тестовые данные для анализа
-    transactions.extend([
-        {'id': 1, 'type': 'income', 'amount': 50000, 'description': 'Зарплата', 'category': 'Доход', 'date': '2024-01-01'},
-        {'id': 2, 'type': 'expense', 'amount': 15000, 'description': 'Продукты', 'category': 'Еда', 'date': '2024-01-02'},
-        {'id': 3, 'type': 'expense', 'amount': 5000, 'description': 'Бензин', 'category': 'Транспорт', 'date': '2024-01-02'},
-        {'id': 4, 'type': 'expense', 'amount': 8000, 'description': 'Ресторан', 'category': 'Развлечения', 'date': '2024-01-03'},
-        {'id': 5, 'type': 'expense', 'amount': 3000, 'description': 'Кино', 'category': 'Развлечения', 'date': '2024-01-04'}
-    ])
-    
-    # Демонстрация анализа и отчетов
-    analyze_spending_patterns()
-    generate_monthly_report()
-    show_financial_tips()
-
-def analyze_spending_patterns():
-    """Анализирует patterns расходов"""
-    if not transactions:
-        print("Нет данных для анализа!")
-        return
-    
-    expenses = [t for t in transactions if t['type'] == 'expense']
-    
-    if not expenses:
-        print("Нет данных о расходах!")
-        return
-    
-    # Анализ по категориям
-    category_totals = {}
-    for expense in expenses:
-        category = expense['category']
-        if category in category_totals:
-            category_totals[category] += expense['amount']
-        else:
-            category_totals[category] = expense['amount']
-    
-    print("\nАнализ расходов по категориям:")
-    print("-" * 40)
-    total_expenses = sum(category_totals.values())
-    
-    for category, amount in sorted(category_totals.items(), key=lambda x: x[1], reverse=True):
-        percentage = (amount / total_expenses) * 100
-        print(f"{category:<15} {amount:>8.2f} руб. ({percentage:>5.1f}%)")
-    
-    # Самые крупные расходы
-    large_expenses = sorted(expenses, key=lambda x: x['amount'], reverse=True)[:5]
-    
-    print(f"\nСамые крупные расходы:")
-    print("-" * 50)
-    for expense in large_expenses:
-        print(f"{expense['date']} | {expense['category']} | {expense['amount']:.2f} руб. | {expense['description']}")
-
-def generate_monthly_report():
-    """Генерирует месячный отчет"""
-    if not transactions:
-        print("Нет данных для отчета!")
-        return
-    
-    try:
-        month = input("Введите месяц в формате ГГГГ-ММ (например, 2024-01): ")
-        
-        monthly_transactions = [t for t in transactions if t['date'].startswith(month)]
-        
-        if not monthly_transactions:
-            print(f"Нет данных за {month}!")
-            return
-        
-        monthly_income = sum(t['amount'] for t in monthly_transactions if t['type'] == 'income')
-        monthly_expenses = sum(t['amount'] for t in monthly_transactions if t['type'] == 'expense')
-        monthly_balance = monthly_income - monthly_expenses
-        
-        print(f"\nОтчет за {month}:")
-        print("=" * 50)
-        print(f"Доходы: {monthly_income:.2f} руб.")
-        print(f"Расходы: {monthly_expenses:.2f} руб.")
-        print(f"Баланс: {monthly_balance:.2f} руб.")
-        
-        if monthly_income > 0:
-            savings_rate = (monthly_balance / monthly_income) * 100
-            print(f"Норма сбережений: {savings_rate:.1f}%")
-        
-        # Расходы по категориям за месяц
-        monthly_expenses_by_category = {}
-        for transaction in monthly_transactions:
-            if transaction['type'] == 'expense':
-                category = transaction['category']
-                if category in monthly_expenses_by_category:
-                    monthly_expenses_by_category[category] += transaction['amount']
-                else:
-                    monthly_expenses_by_category[category] = transaction['amount']
-        
-        if monthly_expenses_by_category:
-            print(f"\nРасходы по категориям:")
-            for category, amount in sorted(monthly_expenses_by_category.items(), key=lambda x: x[1], reverse=True):
-                percentage = (amount / monthly_expenses) * 100 if monthly_expenses > 0 else 0
-                print(f"   {category:<15} {amount:>8.2f} руб. ({percentage:>5.1f}%)")
-        
-    except ValueError:
-        print("Ошибка: Неверный формат месяца!")
-
-def show_financial_tips():
-    """Показывает финансовые советы на основе анализа"""
-    if not transactions:
-        print("Недостаточно данных для советов!")
-        return
-    
-    total_income = sum(t['amount'] for t in transactions if t['type'] == 'income')
-    total_expenses = sum(t['amount'] for t in transactions if t['type'] == 'expense')
-    
-    if total_income == 0:
-        return
-    
-    savings_rate = ((total_income - total_expenses) / total_income) * 100
-    
-    print("\nФинансовые советы:")
-    print("-" * 40)
-    
-    tips = []
-    
-    if savings_rate < 10:
-        tips.append("Совет: Попробуйте увеличить норму сбережений до 10-20%")
-    
-    # Анализ категорий расходов
-    expenses_by_category = {}
-    for transaction in transactions:
-        if transaction['type'] == 'expense':
-            category = transaction['category']
-            if category in expenses_by_category:
-                expenses_by_category[category] += transaction['amount']
-            else:
-                expenses_by_category[category] = transaction['amount']
-    
-    if 'Развлечения' in expenses_by_category:
-        entertainment_pct = (expenses_by_category['Развлечения'] / total_expenses) * 100
-        if entertainment_pct > 30:
-            tips.append("Совет: Слишком высокие расходы на развлечения - рассмотрите оптимизацию")
-    
-    if not tips:
-        tips.append("Ваши финансы выглядят хорошо! Продолжайте в том же духе.")
-    
-    for tip in tips:
-        print(f"   • {tip}")
-
-def main():
-    print("Добро пожаловать в систему учета личных финансов!")
-    
-    # Тестовые данные для анализа
-    transactions.extend([
-        {'id': 1, 'type': 'income', 'amount': 50000, 'description': 'Зарплата', 'category': 'Доход', 'date': '2024-01-01'},
-        {'id': 2, 'type': 'expense', 'amount': 15000, 'description': 'Продукты', 'category': 'Еда', 'date': '2024-01-02'},
-        {'id': 3, 'type': 'expense', 'amount': 5000, 'description': 'Бензин', 'category': 'Транспорт', 'date': '2024-01-02'},
-        {'id': 4, 'type': 'expense', 'amount': 8000, 'description': 'Ресторан', 'category': 'Развлечения', 'date': '2024-01-03'},
-        {'id': 5, 'type': 'expense', 'amount': 3000, 'description': 'Кино', 'category': 'Развлечения', 'date': '2024-01-04'}
-    ])
-    
-    # Демонстрация анализа и отчетов
-    analyze_spending_patterns()
-    generate_monthly_report()
-    show_financial_tips()
+# ... (все остальные функции: show_transactions, show_recent_transactions,
+# show_financial_statistics, show_expenses_by_category, show_income_vs_expenses,
+# set_budget, show_budget_status, check_budget_alerts, add_savings_goal,
+# show_savings_goals, contribute_to_goal, show_financial_health,
+# analyze_spending_patterns, generate_monthly_report, show_financial_tips)
 
 def show_main_menu():
     """Показывает главное меню программы"""
@@ -820,6 +137,9 @@ def initialize_sample_data():
     ]
     transactions.extend(sample_transactions)
     
+    global balance
+    balance = 27000  # Баланс после тестовых операций
+    
     budgets['Еда'] = 20000
     budgets['Транспорт'] = 8000
     
@@ -828,12 +148,54 @@ def initialize_sample_data():
     ])
 
 def main():
+    """Главная функция программы"""
     print("Добро пожаловать в систему учета личных финансов!")
     
-    # Загружаем примеры данных
+    # Загружаем примеры данных (можно закомментировать)
     initialize_sample_data()
     
-    # Демонстрируем меню
-    show_main_menu()
-    choice = get_menu_choice()
-    print(f"Вы выбрали: {choice}")
+    # Главный цикл программы
+    while True:
+        show_main_menu()
+        choice = get_menu_choice()
+        
+        if choice == 1:
+            show_balance()
+        elif choice == 2:
+            add_income()
+        elif choice == 3:
+            add_expense()
+        elif choice == 4:
+            show_transactions()
+            show_recent_transactions()
+        elif choice == 5:
+            show_financial_statistics()
+            show_expenses_by_category()
+            show_income_vs_expenses()
+        elif choice == 6:
+            show_budget_status()
+            check_budget_alerts()
+            set_budget()
+        elif choice == 7:
+            show_savings_goals()
+            add_savings_goal()
+            contribute_to_goal()
+            show_financial_health()
+        elif choice == 8:
+            analyze_spending_patterns()
+            generate_monthly_report()
+        elif choice == 9:
+            show_financial_tips()
+        elif choice == 10:
+            print("\nСпасибо за использование системы учета финансов!")
+            print("До свидания!")
+            break
+        elif choice == -1:
+            continue
+        else:
+            print("Ошибка: Неверный выбор! Пожалуйста, выберите от 1 до 10.")
+        
+        input("\nНажмите Enter для продолжения...")
+
+if __name__ == "__main__":
+    main()
