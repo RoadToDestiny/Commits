@@ -245,6 +245,113 @@ def main():
     update_course_status()
     show_all_courses()
 
+def show_learning_statistics():
+    """Показывает статистику обучения"""
+    if not courses:
+        print("Нет данных для статистики!")
+        return
+    
+    total_courses = len(courses)
+    completed_courses = len([c for c in courses if c['status'] == 'completed'])
+    active_courses = len([c for c in courses if c['status'] == 'active'])
+    paused_courses = len([c for c in courses if c['status'] == 'paused'])
+    
+    total_lessons = sum(c['total_lessons'] for c in courses)
+    completed_lessons = sum(c['completed_lessons'] for c in courses)
+    
+    print("\nСтатистика обучения:")
+    print("-" * 40)
+    print(f"Всего курсов: {total_courses}")
+    print(f"Завершено курсов: {completed_courses}")
+    print(f"Активных курсов: {active_courses}")
+    print(f"Приостановленных курсов: {paused_courses}")
+    print(f"Всего уроков: {total_lessons}")
+    print(f"Завершено уроков: {completed_lessons}")
+    
+    if total_lessons > 0:
+        overall_progress = (completed_lessons / total_lessons) * 100
+        print(f"Общий прогресс: {overall_progress:.1f}%")
+
+def show_progress_by_category():
+    """Показывает прогресс по категориям"""
+    if not courses:
+        print("Нет данных для анализа!")
+        return
+    
+    category_stats = {}
+    
+    for course in courses:
+        category = course['category']
+        if category not in category_stats:
+            category_stats[category] = {
+                'courses': 0,
+                'completed_courses': 0,
+                'total_lessons': 0,
+                'completed_lessons': 0
+            }
+        
+        category_stats[category]['courses'] += 1
+        category_stats[category]['total_lessons'] += course['total_lessons']
+        category_stats[category]['completed_lessons'] += course['completed_lessons']
+        
+        if course['status'] == 'completed':
+            category_stats[category]['completed_courses'] += 1
+    
+    print("\nПрогресс по категориям:")
+    print("-" * 60)
+    print(f"{'Категория':<20} {'Курсы':<8} {'Завершено':<10} {'Уроки':<8} {'Прогресс':<10}")
+    print("-" * 60)
+    
+    for category, stats in category_stats.items():
+        if stats['total_lessons'] > 0:
+            progress = (stats['completed_lessons'] / stats['total_lessons']) * 100
+        else:
+            progress = 0
+        
+        print(f"{category:<20} {stats['courses']:<8} {stats['completed_courses']:<10} "
+              f"{stats['completed_lessons']}/{stats['total_lessons']:<8} {progress:>6.1f}%")
+
+def show_recent_progress():
+    """Показывает недавний прогресс"""
+    active_courses = [c for c in courses if c['status'] == 'active']
+    
+    if not active_courses:
+        print("Нет активных курсов!")
+        return
+    
+    print("\nАктивные курсы (прогресс):")
+    print("-" * 50)
+    
+    for course in active_courses:
+        progress_percent = course['progress'] * 100
+        remaining_lessons = course['total_lessons'] - course['completed_lessons']
+        
+        print(f"{course['name']}")
+        print(f"   Прогресс: {progress_percent:.1f}% ({course['completed_lessons']}/{course['total_lessons']} уроков)")
+        print(f"   Осталось уроков: {remaining_lessons}")
+        print()
+
+def main():
+    print("Добро пожаловать в систему управления учебными курсами!")
+    
+    # Тестовые данные для статистики
+    courses.extend([
+        {'id': 1, 'name': 'Python для начинающих', 'description': 'Основы программирования на Python', 
+         'category': 'Программирование', 'total_lessons': 10, 'completed_lessons': 3, 
+         'status': 'active', 'progress': 0.3},
+        {'id': 2, 'name': 'Английский язык', 'description': 'Курс английского для IT', 
+         'category': 'Иностранные языки', 'total_lessons': 20, 'completed_lessons': 15, 
+         'status': 'active', 'progress': 0.75},
+        {'id': 3, 'name': 'Веб-дизайн', 'description': 'Основы веб-дизайна', 
+         'category': 'Дизайн', 'total_lessons': 15, 'completed_lessons': 15, 
+         'status': 'completed', 'progress': 1.0}
+    ])
+    
+    # Демонстрация статистики
+    show_learning_statistics()
+    show_progress_by_category()
+    show_recent_progress()
+
 
 
 
