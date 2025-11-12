@@ -352,6 +352,139 @@ def main():
     show_progress_by_category()
     show_recent_progress()
 
+def add_reminder():
+    """Добавляет напоминание для курса"""
+    show_all_courses()
+    
+    try:
+        course_id = int(input("Введите ID курса: "))
+        reminder_text = input("Введите текст напоминания: ")
+        deadline = input("Введите дедлайн (ГГГГ-ММ-ДД): ")
+        
+        if not reminder_text.strip():
+            print("Ошибка: Текст напоминания не может быть пустым!")
+            return
+        
+        for course in courses:
+            if course['id'] == course_id:
+                reminder = {
+                    'id': len(reminders) + 1,
+                    'course_id': course_id,
+                    'course_name': course['name'],
+                    'text': reminder_text,
+                    'deadline': deadline,
+                    'completed': False
+                }
+                reminders.append(reminder)
+                print(f"Напоминание для курса '{course['name']}' добавлено!")
+                return
+        
+        print(f"Ошибка: Курс с ID {course_id} не найден!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def show_reminders():
+    """Показывает все напоминания"""
+    if not reminders:
+        print("Нет активных напоминаний!")
+        return
+    
+    active_reminders = [r for r in reminders if not r['completed']]
+    completed_reminders = [r for r in reminders if r['completed']]
+    
+    if active_reminders:
+        print("\nАктивные напоминания:")
+        print("-" * 60)
+        for reminder in active_reminders:
+            status = "ПРОСРОЧЕНО" if is_overdue(reminder['deadline']) else "АКТИВНО"
+            print(f"{reminder['id']}. Курс: {reminder['course_name']}")
+            print(f"   Напоминание: {reminder['text']}")
+            print(f"   Дедлайн: {reminder['deadline']} [{status}]")
+            print()
+    
+    if completed_reminders:
+        print("\nЗавершенные напоминания:")
+        for reminder in completed_reminders:
+            print(f"{reminder['id']}. {reminder['course_name']} - {reminder['text']}")
+
+def mark_reminder_completed():
+    """Отмечает напоминание как выполненное"""
+    show_reminders()
+    
+    try:
+        reminder_id = int(input("Введите ID напоминания для завершения: "))
+        
+        for reminder in reminders:
+            if reminder['id'] == reminder_id and not reminder['completed']:
+                reminder['completed'] = True
+                print(f"Напоминание '{reminder['text']}' отмечено как выполненное!")
+                return
+        
+        print(f"Ошибка: Напоминание с ID {reminder_id} не найдено или уже завершено!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def is_overdue(deadline):
+    """Проверяет, просрочен ли дедлайн"""
+    # Упрощенная проверка (в реальном приложении использовалась бы datetime)
+    return deadline < '2024-01-15'  # Пример текущей даты
+
+def show_study_recommendations():
+    """Показывает рекомендации по обучению"""
+    if not courses:
+        print("Нет данных для рекомендаций!")
+        return
+    
+    # Рекомендации на основе прогресса
+    low_progress_courses = [c for c in courses if c['status'] == 'active' and c['progress'] < 0.3]
+    almost_completed_courses = [c for c in courses if c['status'] == 'active' and c['progress'] > 0.7]
+    
+    print("\nРекомендации по обучению:")
+    print("-" * 40)
+    
+    if low_progress_courses:
+        print("Курсы с низким прогрессом (рекомендуется уделить внимание):")
+        for course in low_progress_courses:
+            print(f"   • {course['name']} ({course['progress']*100:.1f}%)")
+    
+    if almost_completed_courses:
+        print("\nКурсы, близкие к завершению (можно закончить в ближайшее время):")
+        for course in almost_completed_courses:
+            remaining = course['total_lessons'] - course['completed_lessons']
+            print(f"   • {course['name']} (осталось {remaining} уроков)")
+    
+    # Рекомендации по напоминаниям
+    active_reminders = [r for r in reminders if not r['completed']]
+    overdue_reminders = [r for r in active_reminders if is_overdue(r['deadline'])]
+    
+    if overdue_reminders:
+        print("\nПРОСРОЧЕННЫЕ НАПОМИНАНИЯ:")
+        for reminder in overdue_reminders:
+            print(f"   ⚠ {reminder['course_name']}: {reminder['text']}")
+
+def main():
+    print("Добро пожаловать в систему управления учебными курсами!")
+    
+    # Тестовые данные
+    courses.extend([
+        {'id': 1, 'name': 'Python для начинающих', 'description': 'Основы программирования на Python', 
+         'category': 'Программирование', 'total_lessons': 10, 'completed_lessons': 2, 
+         'status': 'active', 'progress': 0.2}
+    ])
+    
+    reminders.extend([
+        {'id': 1, 'course_id': 1, 'course_name': 'Python для начинающих', 
+         'text': 'Завершить первые 5 уроков', 'deadline': '2024-01-10', 'completed': False},
+        {'id': 2, 'course_id': 1, 'course_name': 'Python для начинающих', 
+         'text': 'Сделать практическое задание', 'deadline': '2024-01-20', 'completed': False}
+    ])
+    
+    # Демонстрация системы напоминаний
+    add_reminder()
+    show_reminders()
+    mark_reminder_completed()
+    show_study_recommendations()
+
 
 
 
