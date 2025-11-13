@@ -485,6 +485,169 @@ def main():
     mark_reminder_completed()
     show_study_recommendations()
 
+def add_note():
+    """Добавляет заметку к курсу"""
+    show_all_courses()
+    
+    try:
+        course_id = int(input("Введите ID курса: "))
+        note_text = input("Введите текст заметки: ")
+        lesson_number = input("Введите номер урока (необязательно): ")
+        
+        if not note_text.strip():
+            print("Ошибка: Текст заметки не может быть пустым!")
+            return
+        
+        for course in courses:
+            if course['id'] == course_id:
+                note = {
+                    'id': len(notes) + 1,
+                    'course_id': course_id,
+                    'course_name': course['name'],
+                    'text': note_text,
+                    'lesson_number': lesson_number,
+                    'created_date': '2024-01-01'
+                }
+                notes.append(note)
+                print(f"Заметка для курса '{course['name']}' добавлена!")
+                return
+        
+        print(f"Ошибка: Курс с ID {course_id} не найден!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def show_notes():
+    """Показывает все заметки"""
+    if not notes:
+        print("Нет заметок!")
+        return
+    
+    print("\nВсе заметки:")
+    print("-" * 60)
+    
+    for note in notes:
+        lesson_info = f" (Урок {note['lesson_number']})" if note['lesson_number'] else ""
+        print(f"{note['id']}. Курс: {note['course_name']}{lesson_info}")
+        print(f"   Заметка: {note['text']}")
+        print(f"   Дата: {note['created_date']}")
+        print()
+
+def add_material():
+    """Добавляет учебный материал"""
+    show_all_courses()
+    
+    try:
+        course_id = int(input("Введите ID курса: "))
+        material_type = input("Тип материала (книга, статья, видео, ссылка): ")
+        title = input("Название материала: ")
+        description = input("Описание: ")
+        url = input("Ссылка (необязательно): ")
+        
+        if not title.strip():
+            print("Ошибка: Название материала не может быть пустым!")
+            return
+        
+        for course in courses:
+            if course['id'] == course_id:
+                material = {
+                    'id': len(materials) + 1,
+                    'course_id': course_id,
+                    'course_name': course['name'],
+                    'type': material_type,
+                    'title': title,
+                    'description': description,
+                    'url': url,
+                    'completed': False
+                }
+                materials.append(material)
+                print(f"Материал '{title}' добавлен к курсу '{course['name']}'!")
+                return
+        
+        print(f"Ошибка: Курс с ID {course_id} не найден!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def show_materials():
+    """Показывает все учебные материалы"""
+    if not materials:
+        print("Нет учебных материалов!")
+        return
+    
+    print("\nУчебные материалы:")
+    print("-" * 70)
+    
+    for material in materials:
+        status = "[ПРОЧИТАНО]" if material['completed'] else "[НЕ ПРОЧИТАНО]"
+        print(f"{material['id']}. Курс: {material['course_name']}")
+        print(f"   {material['type'].upper()}: {material['title']} {status}")
+        print(f"   Описание: {material['description']}")
+        if material['url']:
+            print(f"   Ссылка: {material['url']}")
+        print()
+
+def mark_material_completed():
+    """Отмечает материал как изученный"""
+    show_materials()
+    
+    try:
+        material_id = int(input("Введите ID материала для отметки: "))
+        
+        for material in materials:
+            if material['id'] == material_id and not material['completed']:
+                material['completed'] = True
+                print(f"Материал '{material['title']}' отмечен как изученный!")
+                return
+        
+        print(f"Ошибка: Материал с ID {material_id} не найден или уже изучен!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def show_course_resources(course_id):
+    """Показывает все ресурсы курса (заметки и материалы)"""
+    course_notes = [n for n in notes if n['course_id'] == course_id]
+    course_materials = [m for m in materials if m['course_id'] == course_id]
+    
+    if not course_notes and not course_materials:
+        print("Для этого курса нет ресурсов!")
+        return
+    
+    for course in courses:
+        if course['id'] == course_id:
+            print(f"\nРесурсы курса: {course['name']}")
+            
+            if course_notes:
+                print("\nЗаметки:")
+                for note in course_notes:
+                    lesson_info = f" (Урок {note['lesson_number']})" if note['lesson_number'] else ""
+                    print(f"   • {note['text']}{lesson_info}")
+            
+            if course_materials:
+                print("\nМатериалы:")
+                for material in course_materials:
+                    status = "✓" if material['completed'] else "○"
+                    print(f"   {status} {material['type']}: {material['title']}")
+            return
+    
+    print(f"Ошибка: Курс с ID {course_id} не найден!")
+
+def main():
+    print("Добро пожаловать в систему управления учебными курсами!")
+    
+    # Тестовые данные
+    courses.extend([
+        {'id': 1, 'name': 'Python для начинающих', 'description': 'Основы программирования на Python', 
+         'category': 'Программирование', 'total_lessons': 10, 'completed_lessons': 3, 
+         'status': 'active', 'progress': 0.3}
+    ])
+    
+    # Демонстрация системы заметок и материалов
+    add_note()
+    add_material()
+    show_notes()
+    show_materials()
+    mark_material_completed()
+    show_course_resources(1)
+
 
 
 
