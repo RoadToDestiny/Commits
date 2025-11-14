@@ -648,6 +648,169 @@ def main():
     mark_material_completed()
     show_course_resources(1)
 
+def add_study_goal():
+    """Добавляет учебную цель"""
+    goal_name = input("Введите название цели: ")
+    
+    try:
+        target_date = input("Введите целевую дату (ГГГГ-ММ-ДД): ")
+        priority = input("Приоритет (high/medium/low): ").lower()
+        
+        if not goal_name.strip():
+            print("Ошибка: Название цели не может быть пустым!")
+            return
+        
+        if priority not in ['high', 'medium', 'low']:
+            priority = 'medium'
+        
+        goal = {
+            'id': len(study_goals) + 1,
+            'name': goal_name,
+            'target_date': target_date,
+            'priority': priority,
+            'completed': False,
+            'created_date': '2024-01-01'
+        }
+        
+        study_goals.append(goal)
+        print(f"Цель '{goal_name}' добавлена!")
+        
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def show_study_goals():
+    """Показывает все учебные цели"""
+    if not study_goals:
+        print("Нет учебных целей!")
+        return
+    
+    active_goals = [g for g in study_goals if not g['completed']]
+    completed_goals = [g for g in study_goals if g['completed']]
+    
+    if active_goals:
+        print("\nАктивные цели:")
+        print("-" * 60)
+        for goal in active_goals:
+            priority_icon = "🔴" if goal['priority'] == 'high' else \
+                           "🟡" if goal['priority'] == 'medium' else "🟢"
+            print(f"{goal['id']}. {priority_icon} {goal['name']}")
+            print(f"   Целевая дата: {goal['target_date']}")
+            print(f"   Приоритет: {goal['priority']}")
+            print()
+    
+    if completed_goals:
+        print("\nЗавершенные цели:")
+        for goal in completed_goals:
+            print(f"{goal['id']}. ✓ {goal['name']}")
+
+def mark_goal_completed():
+    """Отмечает цель как выполненную"""
+    show_study_goals()
+    
+    try:
+        goal_id = int(input("Введите ID цели для завершения: "))
+        
+        for goal in study_goals:
+            if goal['id'] == goal_id and not goal['completed']:
+                goal['completed'] = True
+                print(f"Цель '{goal['name']}' отмечена как выполненная!")
+                return
+        
+        print(f"Ошибка: Цель с ID {goal_id} не найдена или уже завершена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def create_study_plan():
+    """Создает план обучения на неделю"""
+    active_courses = [c for c in courses if c['status'] == 'active']
+    
+    if not active_courses:
+        print("Нет активных курсов для планирования!")
+        return
+    
+    print("\nПлан обучения на неделю:")
+    print("=" * 50)
+    
+    days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
+    
+    for i, day in enumerate(days, 1):
+        print(f"\n{day}:")
+        
+        # Выбираем курсы для дня (простой алгоритм ротации)
+        course_index = (i - 1) % len(active_courses)
+        course = active_courses[course_index]
+        
+        remaining_lessons = course['total_lessons'] - course['completed_lessons']
+        
+        if remaining_lessons > 0:
+            print(f"   📚 {course['name']}")
+            print(f"   Прогресс: {course['progress']*100:.1f}%")
+            print(f"   Рекомендуется: пройти 1-2 урока")
+            
+            # Находим материалы для этого курса
+            course_materials = [m for m in materials if m['course_id'] == course['id'] and not m['completed']]
+            if course_materials:
+                print(f"   Материалы для изучения:")
+                for material in course_materials[:2]:  # Показываем до 2 материалов
+                    print(f"      • {material['title']}")
+        else:
+            print(f"   🎉 {course['name']} - курс завершен!")
+        
+        # Проверяем напоминания на эту неделю
+        course_reminders = [r for r in reminders if r['course_id'] == course['id'] and not r['completed']]
+        for reminder in course_reminders:
+            print(f"   ⚠ Напоминание: {reminder['text']}")
+
+def show_learning_insights():
+    """Показывает аналитику и инсайты по обучению"""
+    if not courses:
+        print("Недостаточно данных для анализа!")
+        return
+    
+    total_study_time = sum(c['completed_lessons'] for c in courses) * 2  # Предполагаем 2 часа на урок
+    average_progress = sum(c['progress'] for c in courses) / len(courses) * 100
+    
+    print("\nИнсайты по обучению:")
+    print("-" * 40)
+    print(f"Общее время обучения: ~{total_study_time} часов")
+    print(f"Средний прогресс по всем курсам: {average_progress:.1f}%")
+    
+    # Самый успешный курс
+    most_successful = max(courses, key=lambda x: x['progress'])
+    print(f"Самый успешный курс: {most_successful['name']} ({most_successful['progress']*100:.1f}%)")
+    
+    # Курс, требующий внимания
+    needs_attention = min([c for c in courses if c['status'] == 'active'], 
+                         key=lambda x: x['progress'], default=None)
+    if needs_attention:
+        print(f"Требует внимания: {needs_attention['name']} ({needs_attention['progress']*100:.1f}%)")
+    
+    # Рекомендации по расписанию
+    active_courses_count = len([c for c in courses if c['status'] == 'active'])
+    if active_courses_count > 3:
+        print("\n💡 Совет: У вас много активных курсов. Рекомендуется сфокусироваться на 2-3 курсах.")
+    elif active_courses_count == 0:
+        print("\n💡 Совет: Добавьте новые курсы для продолжения обучения!")
+
+def main():
+    print("Добро пожаловать в систему управления учебными курсами!")
+    
+    # Тестовые данные
+    courses.extend([
+        {'id': 1, 'name': 'Python для начинающих', 'description': 'Основы программирования на Python', 
+         'category': 'Программирование', 'total_lessons': 10, 'completed_lessons': 3, 
+         'status': 'active', 'progress': 0.3},
+        {'id': 2, 'name': 'Английский язык', 'description': 'Курс английского для IT', 
+         'category': 'Иностранные языки', 'total_lessons': 20, 'completed_lessons': 15, 
+         'status': 'active', 'progress': 0.75}
+    ])
+    
+    # Демонстрация планирования и целей
+    add_study_goal()
+    show_study_goals()
+    create_study_plan()
+    show_learning_insights()
+
 
 
 
