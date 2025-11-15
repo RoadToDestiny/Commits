@@ -811,6 +811,64 @@ def main():
     create_study_plan()
     show_learning_insights()
 
+def show_main_menu():
+    """Показывает главное меню программы"""
+    print("\n" + "="*50)
+    print("       СИСТЕМА УПРАВЛЕНИЯ УЧЕБНЫМИ КУРСАМИ")
+    print("="*50)
+    print("1. Показать все курсы")
+    print("2. Добавить курс")
+    print("3. Редактировать курс")
+    print("4. Управление уроками")
+    print("5. Статистика обучения")
+    print("6. Напоминания")
+    print("7. Заметки и материалы")
+    print("8. Цели и планирование")
+    print("9. Выход")
+    print("="*50)
+
+def get_menu_choice():
+    """Получает и проверяет выбор пользователя"""
+    try:
+        choice = int(input("\nВыберите действие (1-9): "))
+        return choice
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите число от 1 до 9!")
+        return -1
+
+def initialize_sample_data():
+    """Инициализирует примеры данных для демонстрации"""
+    sample_courses = [
+        {'id': 1, 'name': 'Python для начинающих', 'description': 'Основы программирования на Python', 
+         'category': 'Программирование', 'total_lessons': 10, 'completed_lessons': 3, 
+         'status': 'active', 'progress': 0.3},
+        {'id': 2, 'name': 'Английский язык', 'description': 'Курс английского для IT', 
+         'category': 'Иностранные языки', 'total_lessons': 20, 'completed_lessons': 15, 
+         'status': 'active', 'progress': 0.75}
+    ]
+    courses.extend(sample_courses)
+    
+    reminders.extend([
+        {'id': 1, 'course_id': 1, 'course_name': 'Python для начинающих', 
+         'text': 'Завершить первые 5 уроков', 'deadline': '2024-01-20', 'completed': False}
+    ])
+    
+    study_goals.extend([
+        {'id': 1, 'name': 'Завершить курс Python', 'target_date': '2024-02-01', 
+         'priority': 'high', 'completed': False, 'created_date': '2024-01-01'}
+    ])
+
+def main():
+    print("Добро пожаловать в систему управления учебными курсами!")
+    
+    # Загружаем примеры данных
+    initialize_sample_data()
+    
+    # Демонстрируем меню
+    show_main_menu()
+    choice = get_menu_choice()
+    print(f"Вы выбрали: {choice}")
+
 
 
 
