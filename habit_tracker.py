@@ -146,5 +146,136 @@ def main():
     show_today_habits()
     show_completion_history()
 
+def show_habit_statistics():
+    """Показывает статистику по привычкам"""
+    if not habits:
+        print("Нет данных для статистики!")
+        return
+    
+    total_habits = len(habits)
+    active_habits = len([h for h in habits if h['current_streak'] > 0])
+    total_completions = sum(h['total_completed'] for h in habits)
+    total_streak_days = sum(h['current_streak'] for h in habits)
+    
+    print("\nСтатистика привычек:")
+    print("-" * 40)
+    print(f"Всего привычек: {total_habits}")
+    print(f"Активных привычек: {active_habits}")
+    print(f"Всего выполнено раз: {total_completions}")
+    print(f"Текущих дней в сериях: {total_streak_days}")
+    
+    if total_habits > 0:
+        success_rate = (active_habits / total_habits) * 100
+        print(f"Успешность: {success_rate:.1f}%")
+
+def show_streak_leaderboard():
+    """Показывает таблицу лидеров по сериям"""
+    if not habits:
+        print("Нет данных для таблицы лидеров!")
+        return
+    
+    # Сортируем по текущей серии (по убыванию)
+    sorted_habits = sorted(habits, key=lambda x: x['current_streak'], reverse=True)
+    
+    print("\nТаблица лидеров (текущие серии):")
+    print("-" * 60)
+    print(f"{'Место':<6} {'Привычка':<20} {'Серия':<10} {'Лучшая серия':<15}")
+    print("-" * 60)
+    
+    for i, habit in enumerate(sorted_habits[:10], 1):  # Только топ-10
+        if habit['current_streak'] > 0:
+            print(f"{i:<6} {habit['name']:<20} {habit['current_streak']:<10} {habit['longest_streak']:<15}")
+    
+    print("-" * 60)
+
+def show_category_statistics():
+    """Показывает статистику по категориям"""
+    category_stats = {}
+    
+    for habit in habits:
+        category = habit['category']
+        if category not in category_stats:
+            category_stats[category] = {
+                'count': 0,
+                'total_streak': 0,
+                'total_completed': 0
+            }
+        
+        category_stats[category]['count'] += 1
+        category_stats[category]['total_streak'] += habit['current_streak']
+        category_stats[category]['total_completed'] += habit['total_completed']
+    
+    if not category_stats:
+        print("Нет данных по категориям!")
+        return
+    
+    print("\nСтатистика по категориям:")
+    print("-" * 50)
+    print(f"{'Категория':<15} {'Привычек':<10} {'Средняя серия':<15} {'Всего выполнено':<15}")
+    print("-" * 50)
+    
+    for category, stats in category_stats.items():
+        avg_streak = stats['total_streak'] / stats['count'] if stats['count'] > 0 else 0
+        print(f"{category:<15} {stats['count']:<10} {avg_streak:<15.1f} {stats['total_completed']:<15}")
+
+def show_personal_bests():
+    """Показывает личные рекорды"""
+    if not habits:
+        print("Нет данных о рекордах!")
+        return
+    
+    print("\nЛичные рекорды:")
+    print("-" * 50)
+    
+    # Самая длинная серия
+    best_streak_habit = max(habits, key=lambda x: x['longest_streak'])
+    print(f"Самая длинная серия: {best_streak_habit['longest_streak']} дней")
+    print(f"   Привычка: {best_streak_habit['name']}")
+    
+    # Наиболее последовательная привычка
+    if completion_history:
+        habit_completions = {}
+        for record in completion_history:
+            habit_id = record['habit_id']
+            habit_completions[habit_id] = habit_completions.get(habit_id, 0) + 1
+        
+        if habit_completions:
+            most_consistent_id = max(habit_completions, key=habit_completions.get)
+            most_consistent_habit = next(h for h in habits if h['id'] == most_consistent_id)
+            print(f"\nНаиболее последовательная привычка: {most_consistent_habit['name']}")
+            print(f"   Всего выполнено: {habit_completions[most_consistent_id]} раз")
+    
+    # Текущая самая длинная активная серия
+    active_habits_with_streak = [h for h in habits if h['current_streak'] > 0]
+    if active_habits_with_streak:
+        current_best = max(active_habits_with_streak, key=lambda x: x['current_streak'])
+        print(f"\nТекущая самая длинная активная серия: {current_best['current_streak']} дней")
+        print(f"   Привычка: {current_best['name']}")
+
+def main():
+    print("Добро пожаловать в трекер привычек!")
+    
+    # Тестовые данные для статистики
+    habits.extend([
+        {'id': 1, 'name': 'Утренняя зарядка', 'description': '15 минут упражнений', 
+         'category': 'Спорт', 'frequency': 'daily', 'target_count': 1,
+         'current_streak': 5, 'longest_streak': 10, 'total_completed': 25,
+         'created_date': '2024-01-01'},
+        {'id': 2, 'name': 'Чтение книги', 'description': '30 минут чтения', 
+         'category': 'Обучение', 'frequency': 'daily', 'target_count': 1,
+         'current_streak': 12, 'longest_streak': 12, 'total_completed': 45,
+         'created_date': '2024-01-01'},
+        {'id': 3, 'name': 'Медитация', 'description': '10 минут медитации', 
+         'category': 'Здоровье', 'frequency': 'daily', 'target_count': 1,
+         'current_streak': 0, 'longest_streak': 7, 'total_completed': 15,
+         'created_date': '2024-01-01'}
+    ])
+    
+    # Демонстрация статистики
+    show_habit_statistics()
+    show_streak_leaderboard()
+    show_category_statistics()
+    show_personal_bests()
+
 if __name__ == "__main__":
     main()
