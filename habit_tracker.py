@@ -277,5 +277,177 @@ def main():
     show_category_statistics()
     show_personal_bests()
 
+def add_goal():
+    """Добавляет цель для привычки"""
+    show_all_habits()
+    
+    try:
+        habit_id = int(input("Введите ID привычки: "))
+        target_streak = int(input("Введите целевое количество дней (серия): "))
+        description = input("Введите описание цели: ")
+        
+        if target_streak <= 0:
+            print("Ошибка: Целевое количество дней должно быть положительным!")
+            return
+        
+        for habit in habits:
+            if habit['id'] == habit_id:
+                goal = {
+                    'id': len(goals) + 1,
+                    'habit_id': habit_id,
+                    'habit_name': habit['name'],
+                    'target_streak': target_streak,
+                    'description': description,
+                    'completed': False,
+                    'current_progress': habit['current_streak'],
+                    'created_date': '2024-01-01'
+                }
+                goals.append(goal)
+                print(f"Цель для привычки '{habit['name']}' добавлена!")
+                return
+        
+        print(f"Ошибка: Привычка с ID {habit_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def show_goals():
+    """Показывает все цели"""
+    if not goals:
+        print("Нет активных целей!")
+        return
+    
+    active_goals = [g for g in goals if not g['completed']]
+    completed_goals = [g for g in goals if g['completed']]
+    
+    if active_goals:
+        print("\nАктивные цели:")
+        print("-" * 60)
+        for goal in active_goals:
+            progress_percent = (goal['current_progress'] / goal['target_streak']) * 100
+            remaining = goal['target_streak'] - goal['current_progress']
+            
+            print(f"{goal['id']}. Привычка: {goal['habit_name']}")
+            print(f"   Цель: {goal['description']}")
+            print(f"   Прогресс: {goal['current_progress']}/{goal['target_streak']} дней")
+            print(f"   Осталось: {remaining} дней | {progress_percent:.1f}%")
+            print()
+    
+    if completed_goals:
+        print("\nЗавершенные цели:")
+        for goal in completed_goals:
+            print(f"{goal['id']}. ✓ {goal['habit_name']} - {goal['description']}")
+
+def check_goal_progress():
+    """Проверяет и обновляет прогресс целей"""
+    updated_goals = []
+    
+    for goal in goals:
+        if not goal['completed']:
+            # Находим текущую привычку
+            for habit in habits:
+                if habit['id'] == goal['habit_id']:
+                    goal['current_progress'] = habit['current_streak']
+                    
+                    # Проверяем, достигнута ли цель
+                    if habit['current_streak'] >= goal['target_streak']:
+                        goal['completed'] = True
+                        print(f"🎉 Поздравляем! Цель достигнута: {goal['description']}")
+                        print(f"   Привычка: {goal['habit_name']}")
+                        print(f"   Серия: {habit['current_streak']} дней")
+                    
+                    updated_goals.append(goal)
+                    break
+    
+    if not updated_goals:
+        print("Нет активных целей для проверки!")
+
+def add_reward():
+    """Добавляет награду за достижение цели"""
+    reward_name = input("Введите название награды: ")
+    description = input("Введите описание награды: ")
+    
+    if reward_name.strip():
+        reward = {
+            'id': len(rewards) + 1,
+            'name': reward_name,
+            'description': description,
+            'unlocked': False,
+            'unlock_date': None
+        }
+        rewards.append(reward)
+        print(f"Награда '{reward_name}' добавлена!")
+    else:
+        print("Ошибка: Название награды не может быть пустым!")
+
+def unlock_reward():
+    """Разблокирует награду"""
+    if not rewards:
+        print("Нет доступных наград!")
+        return
+    
+    locked_rewards = [r for r in rewards if not r['unlocked']]
+    
+    if not locked_rewards:
+        print("Все награды уже разблокированы!")
+        return
+    
+    print("\nДоступные для разблокировки награды:")
+    for reward in locked_rewards:
+        print(f"{reward['id']}. {reward['name']} - {reward['description']}")
+    
+    try:
+        reward_id = int(input("Введите ID награды для разблокировки: "))
+        
+        for reward in rewards:
+            if reward['id'] == reward_id and not reward['unlocked']:
+                reward['unlocked'] = True
+                reward['unlock_date'] = '2024-01-15'
+                print(f"🎊 Награда '{reward['name']}' разблокирована!")
+                return
+        
+        print(f"Ошибка: Награда с ID {reward_id} не найдена или уже разблокирована!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def show_rewards():
+    """Показывает все награды"""
+    if not rewards:
+        print("Нет наград!")
+        return
+    
+    unlocked_rewards = [r for r in rewards if r['unlocked']]
+    locked_rewards = [r for r in rewards if not r['unlocked']]
+    
+    if unlocked_rewards:
+        print("\nРазблокированные награды:")
+        for reward in unlocked_rewards:
+            print(f"🏆 {reward['name']} - {reward['description']}")
+            print(f"   Получена: {reward['unlock_date']}")
+            print()
+    
+    if locked_rewards:
+        print("\nЗаблокированные награды:")
+        for reward in locked_rewards:
+            print(f"🔒 {reward['name']} - {reward['description']}")
+
+def main():
+    print("Добро пожаловать в трекер привычек!")
+    
+    # Тестовые данные
+    habits.extend([
+        {'id': 1, 'name': 'Утренняя зарядка', 'description': '15 минут упражнений', 
+         'category': 'Спорт', 'frequency': 'daily', 'target_count': 1,
+         'current_streak': 5, 'longest_streak': 10, 'total_completed': 25,
+         'created_date': '2024-01-01'}
+    ])
+    
+    # Демонстрация системы целей и наград
+    add_goal()
+    add_reward()
+    show_goals()
+    check_goal_progress()
+    unlock_reward()
+    show_rewards()
+
 if __name__ == "__main__":
     main()
