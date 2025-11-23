@@ -449,5 +449,200 @@ def main():
     unlock_reward()
     show_rewards()
 
+def create_routine():
+    """Создает рутину из нескольких привычек"""
+    routine_name = input("Введите название рутины: ")
+    
+    if not routine_name.strip():
+        print("Ошибка: Название рутины не может быть пустым!")
+        return
+    
+    show_all_habits()
+    print("\nДобавьте привычки в рутину (введите ID через запятую):")
+    habit_ids_input = input("ID привычек: ")
+    
+    try:
+        habit_ids = [int(id_str.strip()) for id_str in habit_ids_input.split(',')]
+        routine_habits = []
+        
+        for habit_id in habit_ids:
+            for habit in habits:
+                if habit['id'] == habit_id:
+                    routine_habits.append({
+                        'id': habit['id'],
+                        'name': habit['name']
+                    })
+                    break
+        
+        if routine_habits:
+            routine = {
+                'id': len(routines) + 1,
+                'name': routine_name,
+                'habits': routine_habits,
+                'time_of_day': 'morning',  # morning, afternoon, evening, custom
+                'estimated_time': len(routine_habits) * 15,  # минут
+                'enabled': True
+            }
+            routines.append(routine)
+            print(f"Рутина '{routine_name}' создана!")
+            print(f"Привычек в рутине: {len(routine_habits)}")
+            print(f"Примерное время: {routine['estimated_time']} минут")
+        else:
+            print("Ошибка: Не удалось найти указанные привычки!")
+            
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные ID!")
+
+def show_routines():
+    """Показывает все рутины"""
+    if not routines:
+        print("Нет созданных рутин!")
+        return
+    
+    print("\nВсе рутины:")
+    print("-" * 60)
+    
+    for routine in routines:
+        status = "✅ ВКЛ" if routine['enabled'] else "❌ ВЫКЛ"
+        print(f"{routine['id']}. {routine['name']} [{status}]")
+        print(f"   Время: {routine['time_of_day']} | Приблизительно: {routine['estimated_time']} мин")
+        print(f"   Привычки: {', '.join([h['name'] for h in routine['habits']])}")
+        print()
+
+def execute_routine():
+    """Выполняет рутину"""
+    show_routines()
+    
+    try:
+        routine_id = int(input("Введите ID рутины для выполнения: "))
+        
+        for routine in routines:
+            if routine['id'] == routine_id:
+                if not routine['enabled']:
+                    print(f"Рутина '{routine['name']}' отключена!")
+                    return
+                
+                print(f"\nВыполнение рутины: {routine['name']}")
+                print("-" * 40)
+                
+                completed_count = 0
+                for habit_info in routine['habits']:
+                    response = input(f"Выполнить '{habit_info['name']}'? (y/n): ").lower()
+                    if response == 'y':
+                        # Находим и отмечаем привычку
+                        for habit in habits:
+                            if habit['id'] == habit_info['id']:
+                                habit['current_streak'] += 1
+                                habit['total_completed'] += 1
+                                completed_count += 1
+                                break
+                
+                print(f"\nРутина выполнена! Завершено привычек: {completed_count}/{len(routine['habits'])}")
+                return
+        
+        print(f"Ошибка: Рутина с ID {routine_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def add_reminder():
+    """Добавляет напоминание для привычки"""
+    show_all_habits()
+    
+    try:
+        habit_id = int(input("Введите ID привычки: "))
+        reminder_time = input("Время напоминания (например, 08:00): ")
+        days = input("Дни недели (например, пн,вт,ср или 'daily'): ")
+        
+        for habit in habits:
+            if habit['id'] == habit_id:
+                reminder = {
+                    'id': len(reminders) + 1,
+                    'habit_id': habit_id,
+                    'habit_name': habit['name'],
+                    'time': reminder_time,
+                    'days': days,
+                    'enabled': True
+                }
+                reminders.append(reminder)
+                print(f"Напоминание для '{habit['name']}' добавлено на {reminder_time}")
+                return
+        
+        print(f"Ошибка: Привычка с ID {habit_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def show_todays_schedule():
+    """Показывает расписание на сегодня"""
+    if not habits and not routines:
+        print("Нет активных привычек и рутин!")
+        return
+    
+    print("\nРасписание на сегодня:")
+    print("=" * 50)
+    
+    # Утренние привычки
+    morning_habits = [h for h in habits if any(
+        r['habit_id'] == h['id'] and r['time'].startswith('0') or r['time'].startswith('1') 
+        for r in reminders if r['enabled']
+    )]
+    
+    if morning_habits:
+        print("\n🌅 Утро:")
+        for habit in morning_habits:
+            # Находим время напоминания
+            habit_reminders = [r for r in reminders if r['habit_id'] == habit['id'] and r['enabled']]
+            if habit_reminders:
+                times = ', '.join([r['time'] for r in habit_reminders])
+                print(f"   ⏰ {times} - {habit['name']}")
+    
+    # Дневные рутины
+    day_routines = [r for r in routines if r['time_of_day'] == 'afternoon' and r['enabled']]
+    if day_routines:
+        print("\n🌞 День:")
+        for routine in day_routines:
+            print(f"   📋 {routine['name']} ({len(routine['habits'])} привычек, ~{routine['estimated_time']} мин)")
+    
+    # Вечерние привычки
+    evening_habits = [h for h in habits if any(
+        r['habit_id'] == h['id'] and (r['time'].startswith('1') and int(r['time'].split(':')[0]) >= 18 or 
+                                      r['time'].startswith('2'))
+        for r in reminders if r['enabled']
+    )]
+    
+    if evening_habits:
+        print("\n🌙 Вечер:")
+        for habit in evening_habits:
+            habit_reminders = [r for r in reminders if r['habit_id'] == habit['id'] and r['enabled']]
+            if habit_reminders:
+                times = ', '.join([r['time'] for r in habit_reminders])
+                print(f"   ⏰ {times} - {habit['name']}")
+    
+    # Статистика дня
+    today = '2024-01-15'
+    today_completions = len([r for r in completion_history if r['date'] == today])
+    print(f"\n📊 Статистика дня: {today_completions} привычек выполнено")
+
+def main():
+    print("Добро пожаловать в трекер привычек!")
+    
+    # Тестовые данные
+    habits.extend([
+        {'id': 1, 'name': 'Утренняя зарядка', 'description': '15 минут упражнений', 
+         'category': 'Спорт', 'frequency': 'daily', 'target_count': 1,
+         'current_streak': 5, 'longest_streak': 10, 'total_completed': 25,
+         'created_date': '2024-01-01'},
+        {'id': 2, 'name': 'Чтение книги', 'description': '30 минут чтения', 
+         'category': 'Обучение', 'frequency': 'daily', 'target_count': 1,
+         'current_streak': 12, 'longest_streak': 12, 'total_completed': 45,
+         'created_date': '2024-01-01'}
+    ])
+    
+    # Демонстрация планирования
+    create_routine()
+    show_routines()
+    execute_routine()
+    add_reminder()
+    show_todays_schedule()
+
 if __name__ == "__main__":
     main()
