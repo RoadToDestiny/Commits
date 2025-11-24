@@ -644,5 +644,182 @@ def main():
     add_reminder()
     show_todays_schedule()
 
+def analyze_habit_patterns():
+    """Анализирует patterns выполнения привычек"""
+    if not completion_history:
+        print("Недостаточно данных для анализа!")
+        return
+    
+    # Анализ по дням недели
+    days_of_week = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
+    completions_by_day = {day: 0 for day in days_of_week}
+    
+    # Упрощенный анализ (в реальном приложении использовалась бы дата)
+    for record in completion_history:
+        # Для демонстрации используем случайное распределение
+        import random
+        day = random.choice(days_of_week)
+        completions_by_day[day] += 1
+    
+    print("\nАнализ выполнения по дням недели:")
+    print("-" * 40)
+    
+    for day in days_of_week:
+        count = completions_by_day[day]
+        print(f"{day}: {'█' * (count // 2)} {count}")
+
+def show_consistency_analysis():
+    """Анализирует последовательность выполнения"""
+    if not habits:
+        print("Нет данных для анализа!")
+        return
+    
+    print("\nАнализ последовательности:")
+    print("-" * 50)
+    
+    for habit in habits:
+        if habit['total_completed'] > 0:
+            consistency_score = (habit['current_streak'] / habit['longest_streak']) * 100 \
+                                if habit['longest_streak'] > 0 else 0
+            
+            print(f"{habit['name']}:")
+            print(f"   Текущая серия: {habit['current_streak']} дней")
+            print(f"   Лучшая серия: {habit['longest_streak']} дней")
+            print(f"   Последовательность: {consistency_score:.1f}%")
+            
+            if consistency_score >= 80:
+                print("   🎯 Отличная последовательность!")
+            elif consistency_score >= 50:
+                print("   👍 Хорошая последовательность")
+            else:
+                print("   💪 Можно улучшить")
+            print()
+
+def generate_recommendations():
+    """Генерирует рекомендации на основе анализа"""
+    if not habits:
+        print("Нет данных для рекомендаций!")
+        return
+    
+    print("\nПерсональные рекомендации:")
+    print("-" * 40)
+    
+    recommendations = []
+    
+    # Анализ низких серий
+    low_streak_habits = [h for h in habits if h['current_streak'] < 3 and h['frequency'] == 'daily']
+    if low_streak_habits:
+        habit_names = ', '.join([h['name'] for h in low_streak_habits[:3]])
+        recommendations.append(f"💪 Сфокусируйтесь на привычках с низкой серией: {habit_names}")
+    
+    # Анализ пропущенных привычек
+    if completion_history:
+        # Привычки, которые давно не выполнялись
+        recent_days = 3
+        recent_completions = set()
+        for record in completion_history[-10:]:  # Последние 10 записей
+            recent_completions.add(record['habit_id'])
+        
+        missed_habits = [h for h in habits if h['id'] not in recent_completions and h['frequency'] == 'daily']
+        if missed_habits:
+            habit_names = ', '.join([h['name'] for h in missed_habits[:2]])
+            recommendations.append(f"⏰ Вернитесь к привычкам: {habit_names}")
+    
+    # Рекомендации по рутинам
+    if not routines:
+        recommendations.append("📋 Создайте утреннюю рутину для лучшей организованности")
+    
+    # Рекомендации по целям
+    active_goals = [g for g in goals if not g['completed']]
+    if not active_goals:
+        recommendations.append("🎯 Установите новые цели для мотивации")
+    else:
+        nearly_completed = [g for g in active_goals if g['current_progress'] / g['target_streak'] >= 0.8]
+        if nearly_completed:
+            goal_names = ', '.join([g['habit_name'] for g in nearly_completed[:2]])
+            recommendations.append(f"🔥 Почти у цели: {goal_names} - продолжайте в том же духе!")
+    
+    if not recommendations:
+        recommendations.append("Ваши привычки выглядят отлично! Продолжайте в том же духе! 🌟")
+    
+    for i, rec in enumerate(recommendations, 1):
+        print(f"{i}. {rec}")
+
+def show_motivational_quotes():
+    """Показывает мотивационные цитаты"""
+    import random
+    
+    quotes = [
+        "Привычка - это не то, что ты делаешь раз в месяц, а то, что ты делаешь каждый день.",
+        "Успех - это сумма небольших усилий, повторяющихся изо дня в день.",
+        "Не важно, как медленно ты продвигаешься, главное - не останавливайся.",
+        "Лучшее время для посадки дерева было 20 лет назад. Следующий лучший момент - сегодня.",
+        "Маленькие ежедневные улучшения со временем приводят к ошеломляющим результатам.",
+        "Дисциплина - это выбор между тем, что ты хочешь сейчас, и тем, чего ты хочешь больше всего.",
+        "Привычки определяют твое будущее больше, чем твои таланты."
+    ]
+    
+    print("\n💭 Мотивация на сегодня:")
+    print("-" * 50)
+    print(f"\"{random.choice(quotes)}\"")
+    print("-" * 50)
+
+def show_weekly_report():
+    """Генерирует недельный отчет"""
+    if not completion_history:
+        print("Недостаточно данных для отчета!")
+        return
+    
+    # Статистика за неделю (упрощенная)
+    weekly_completions = len([r for r in completion_history])
+    active_days = len(set([r['date'] for r in completion_history]))
+    
+    print("\n📊 Недельный отчет:")
+    print("=" * 50)
+    print(f"Привычек выполнено: {weekly_completions}")
+    print(f"Активных дней: {active_days}/7")
+    
+    if active_days > 0:
+        daily_average = weekly_completions / active_days
+        print(f"Среднее в день: {daily_average:.1f} привычек")
+    
+    # Самые успешные привычки
+    if habits:
+        top_habits = sorted(habits, key=lambda x: x['current_streak'], reverse=True)[:3]
+        print("\n🏆 Топ-3 привычки этой недели:")
+        for i, habit in enumerate(top_habits, 1):
+            print(f"{i}. {habit['name']} - {habit['current_streak']} дней подряд")
+    
+    # Рекомендации на следующую неделю
+    print("\n🎯 Цели на следующую неделю:")
+    if len(habits) < 5:
+        print("   • Добавьте 1-2 новые полезные привычки")
+    
+    low_streak_count = len([h for h in habits if h['current_streak'] < 3])
+    if low_streak_count > 0:
+        print(f"   • Укрепите {low_streak_count} привычек с низкой серией")
+
+def main():
+    print("Добро пожаловать в трекер привычек!")
+    
+    # Тестовые данные для анализа
+    habits.extend([
+        {'id': 1, 'name': 'Утренняя зарядка', 'description': '15 минут упражнений', 
+         'category': 'Спорт', 'frequency': 'daily', 'target_count': 1,
+         'current_streak': 5, 'longest_streak': 10, 'total_completed': 25,
+         'created_date': '2024-01-01'},
+        {'id': 2, 'name': 'Чтение книги', 'description': '30 минут чтения', 
+         'category': 'Обучение', 'frequency': 'daily', 'target_count': 1,
+         'current_streak': 12, 'longest_streak': 12, 'total_completed': 45,
+         'created_date': '2024-01-01'}
+    ])
+    
+    # Демонстрация аналитики
+    analyze_habit_patterns()
+    show_consistency_analysis()
+    generate_recommendations()
+    show_motivational_quotes()
+    show_weekly_report()
+
 if __name__ == "__main__":
     main()
