@@ -821,5 +821,75 @@ def main():
     show_motivational_quotes()
     show_weekly_report()
 
+def show_main_menu():
+    """Показывает главное меню программы"""
+    print("\n" + "="*50)
+    print("           ТРЕКЕР ПРИВЫЧЕК И РУТИН")
+    print("="*50)
+    print("1. Показать все привычки")
+    print("2. Добавить привычку")
+    print("3. Отметить выполнение")
+    print("4. Статистика и аналитика")
+    print("5. Цели и награды")
+    print("6. Рутины и расписание")
+    print("7. Рекомендации и отчеты")
+    print("8. Выход")
+    print("="*50)
+
+def get_menu_choice():
+    """Получает и проверяет выбор пользователя"""
+    try:
+        choice = int(input("\nВыберите действие (1-8): "))
+        return choice
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите число от 1 до 8!")
+        return -1
+
+def initialize_sample_data():
+    """Инициализирует примеры данных для демонстрации"""
+    sample_habits = [
+        {'id': 1, 'name': 'Утренняя зарядка', 'description': '15 минут упражнений', 
+         'category': 'Спорт', 'frequency': 'daily', 'target_count': 1,
+         'current_streak': 5, 'longest_streak': 10, 'total_completed': 25,
+         'created_date': '2024-01-01'},
+        {'id': 2, 'name': 'Чтение книги', 'description': '30 минут чтения', 
+         'category': 'Обучение', 'frequency': 'daily', 'target_count': 1,
+         'current_streak': 12, 'longest_streak': 12, 'total_completed': 45,
+         'created_date': '2024-01-01'},
+        {'id': 3, 'name': 'Медитация', 'description': '10 минут медитации', 
+         'category': 'Здоровье', 'frequency': 'daily', 'target_count': 1,
+         'current_streak': 0, 'longest_streak': 7, 'total_completed': 15,
+         'created_date': '2024-01-01'}
+    ]
+    habits.extend(sample_habits)
+    
+    completion_history.extend([
+        {'habit_id': 1, 'habit_name': 'Утренняя зарядка', 'date': '2024-01-14', 'timestamp': '08:00'},
+        {'habit_id': 2, 'habit_name': 'Чтение книги', 'date': '2024-01-14', 'timestamp': '21:00'}
+    ])
+    
+    goals.extend([
+        {'id': 1, 'habit_id': 1, 'habit_name': 'Утренняя зарядка',
+         'target_streak': 21, 'description': '21 день зарядки подряд',
+         'completed': False, 'current_progress': 5, 'created_date': '2024-01-01'}
+    ])
+    
+    routines.extend([
+        {'id': 1, 'name': 'Утренняя рутина', 'habits': [
+            {'id': 1, 'name': 'Утренняя зарядка'}
+        ], 'time_of_day': 'morning', 'estimated_time': 15, 'enabled': True}
+    ])
+
+def main():
+    print("Добро пожаловать в трекер привычек!")
+    
+    # Загружаем примеры данных
+    initialize_sample_data()
+    
+    # Демонстрируем меню
+    show_main_menu()
+    choice = get_menu_choice()
+    print(f"Вы выбрали: {choice}")
+    
 if __name__ == "__main__":
     main()
