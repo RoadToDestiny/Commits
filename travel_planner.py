@@ -233,5 +233,171 @@ def main():
     delete_trip()
     show_all_trips()
 
+def add_attraction():
+    """Добавляет достопримечательность"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        name = input("Введите название достопримечательности: ")
+        description = input("Введите описание: ")
+        
+        if not name.strip():
+            print("Ошибка: Название не может быть пустым!")
+            return
+        
+        for trip in trips:
+            if trip['id'] == trip_id:
+                attraction = {
+                    'id': len(attractions) + 1,
+                    'trip_id': trip_id,
+                    'trip_destination': trip['destination'],
+                    'name': name,
+                    'description': description,
+                    'visit_date': '',
+                    'estimated_cost': 0.0,
+                    'priority': 'medium',  # high, medium, low
+                    'visited': False
+                }
+                attractions.append(attraction)
+                print(f"Достопримечательность '{name}' добавлена к поездке в '{trip['destination']}'!")
+                return
+        
+        print(f"Ошибка: Поездка с ID {trip_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def show_trip_attractions():
+    """Показывает достопримечательности поездки"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        
+        trip_attractions = [a for a in attractions if a['trip_id'] == trip_id]
+        
+        if not trip_attractions:
+            print("Для этой поездки нет достопримечательностей!")
+            return
+        
+        print(f"\nДостопримечательности поездки:")
+        print("-" * 60)
+        
+        for attraction in trip_attractions:
+            status = "✅" if attraction['visited'] else "⏳"
+            priority = "‼️" if attraction['priority'] == 'high' else \
+                      "❗" if attraction['priority'] == 'medium' else ""
+            
+            print(f"{attraction['id']}. {status} {priority} {attraction['name']}")
+            print(f"   Описание: {attraction['description']}")
+            print(f"   Дата посещения: {attraction['visit_date'] or 'Не назначена'}")
+            print(f"   Стоимость: {attraction['estimated_cost']:.2f}")
+            print()
+
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def create_itinerary():
+    """Создает маршрут для поездки"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        day_number = int(input("Введите номер дня: "))
+        
+        for trip in trips:
+            if trip['id'] == trip_id:
+                print(f"\nСоздание маршрута для дня {day_number} поездки в '{trip['destination']}'")
+                
+                # Показываем доступные достопримечательности
+                trip_attractions = [a for a in attractions if a['trip_id'] == trip_id and not a['visited']]
+                
+                if not trip_attractions:
+                    print("Нет доступных достопримечательностей!")
+                    return
+                
+                print("Доступные достопримечательности:")
+                for attraction in trip_attractions:
+                    print(f"{attraction['id']}. {attraction['name']}")
+                
+                attraction_ids_input = input("Введите ID достопримечательностей через запятую: ")
+                attraction_ids = [int(id_str.strip()) for id_str in attraction_ids_input.split(',')]
+                
+                selected_attractions = []
+                for attr_id in attraction_ids:
+                    for attraction in trip_attractions:
+                        if attraction['id'] == attr_id:
+                            selected_attractions.append(attraction['name'])
+                            break
+                
+                notes = input("Введите заметки для этого дня: ")
+                
+                itinerary = {
+                    'id': len(itineraries) + 1,
+                    'trip_id': trip_id,
+                    'day_number': day_number,
+                    'date': '',
+                    'attractions': selected_attractions,
+                    'notes': notes,
+                    'estimated_cost': 0.0
+                }
+                itineraries.append(itinerary)
+                print(f"Маршрут для дня {day_number} создан!")
+                return
+        
+        print(f"Ошибка: Поездка с ID {trip_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def show_trip_itinerary():
+    """Показывает маршрут поездки"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        
+        trip_itineraries = sorted([i for i in itineraries if i['trip_id'] == trip_id], 
+                                 key=lambda x: x['day_number'])
+        
+        if not trip_itineraries:
+            print("Для этой поездки нет маршрута!")
+            return
+        
+        for trip in trips:
+            if trip['id'] == trip_id:
+                print(f"\nМаршрут поездки в '{trip['destination']}':")
+                print("=" * 60)
+                
+                for itinerary in trip_itineraries:
+                    print(f"\nДень {itinerary['day_number']}:")
+                    if itinerary['date']:
+                        print(f"   Дата: {itinerary['date']}")
+                    print(f"   Достопримечательности: {', '.join(itinerary['attractions'])}")
+                    if itinerary['notes']:
+                        print(f"   Заметки: {itinerary['notes']}")
+                    print(f"   Примерная стоимость: {itinerary['estimated_cost']:.2f}")
+                
+                return
+        
+        print(f"Ошибка: Поездка с ID {trip_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def main():
+    print("Добро пожаловать в планировщик путешествий!")
+    
+    # Тестовые данные
+    trips.extend([
+        {'id': 1, 'destination': 'Париж', 'description': 'Романтическое путешествие', 
+         'start_date': '2024-06-01', 'end_date': '2024-06-07', 'budget': 1500.00,
+         'status': 'planned', 'travelers': ['Анна', 'Иван']}
+    ])
+    
+    # Демонстрация планирования
+    add_attraction()
+    show_trip_attractions()
+    create_itinerary()
+    show_trip_itinerary()
+
 if __name__ == "__main__":
     main()
