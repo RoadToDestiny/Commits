@@ -399,5 +399,184 @@ def main():
     create_itinerary()
     show_trip_itinerary()
 
+def add_expense():
+    """Добавляет расход к поездке"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        category = input("Категория расхода (транспорт, жилье, еда, развлечения, другое): ")
+        description = input("Описание расхода: ")
+        amount = float(input("Сумма расхода: "))
+        
+        if amount <= 0:
+            print("Ошибка: Сумма должна быть положительной!")
+            return
+        
+        for trip in trips:
+            if trip['id'] == trip_id:
+                expense = {
+                    'id': len(expenses) + 1,
+                    'trip_id': trip_id,
+                    'trip_destination': trip['destination'],
+                    'category': category,
+                    'description': description,
+                    'amount': amount,
+                    'date': '',
+                    'payment_method': 'cash'  # cash, card, other
+                }
+                expenses.append(expense)
+                print(f"Расход '{description}' на сумму {amount:.2f} добавлен!")
+                return
+        
+        print(f"Ошибка: Поездка с ID {trip_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def show_trip_expenses():
+    """Показывает расходы поездки"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        
+        trip_expenses = [e for e in expenses if e['trip_id'] == trip_id]
+        
+        if not trip_expenses:
+            print("Для этой поездки нет расходов!")
+            return
+        
+        total_expenses = sum(e['amount'] for e in trip_expenses)
+        
+        print(f"\nРасходы поездки:")
+        print("-" * 60)
+        print(f"{'Категория':<15} {'Описание':<20} {'Сумма':<10} {'Дата':<12}")
+        print("-" * 60)
+        
+        for expense in trip_expenses:
+            print(f"{expense['category']:<15} {expense['description']:<20} "
+                  f"{expense['amount']:<10.2f} {expense['date']:<12}")
+        
+        print("-" * 60)
+        print(f"Всего расходов: {total_expenses:.2f}")
+        
+        # Сравнение с бюджетом
+        for trip in trips:
+            if trip['id'] == trip_id:
+                budget = trip['budget']
+                if budget > 0:
+                    remaining = budget - total_expenses
+                    percentage = (total_expenses / budget) * 100
+                    
+                    print(f"\nБюджет: {budget:.2f}")
+                    print(f"Потрачено: {total_expenses:.2f} ({percentage:.1f}%)")
+                    print(f"Осталось: {remaining:.2f}")
+                    
+                    if percentage > 80:
+                        print("⚠ Внимание: Бюджет почти исчерпан!")
+                break
+        
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def show_expenses_by_category():
+    """Показывает расходы по категориям"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        
+        trip_expenses = [e for e in expenses if e['trip_id'] == trip_id]
+        
+        if not trip_expenses:
+            print("Для этой поездки нет расходов!")
+            return
+        
+        # Группируем по категориям
+        expenses_by_category = {}
+        for expense in trip_expenses:
+            category = expense['category']
+            if category in expenses_by_category:
+                expenses_by_category[category] += expense['amount']
+            else:
+                expenses_by_category[category] = expense['amount']
+        
+        total_expenses = sum(expenses_by_category.values())
+        
+        print(f"\nРасходы по категориям:")
+        print("-" * 40)
+        
+        for category, amount in sorted(expenses_by_category.items(), key=lambda x: x[1], reverse=True):
+            percentage = (amount / total_expenses) * 100 if total_expenses > 0 else 0
+            print(f"{category:<15} {amount:>8.2f} ({percentage:>5.1f}%)")
+        
+        print("-" * 40)
+        print(f"Всего: {total_expenses:>23.2f}")
+        
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def set_budget_alert():
+    """Устанавливает предупреждение о бюджете"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        
+        for trip in trips:
+            if trip['id'] == trip_id:
+                if trip['budget'] <= 0:
+                    print("Ошибка: Сначала установите бюджет для поездки!")
+                    return
+                
+                threshold = float(input("Установите порог предупреждения (например, 80 для 80%): "))
+                
+                if 0 < threshold < 100:
+                    trip_expenses = sum(e['amount'] for e in expenses if e['trip_id'] == trip_id)
+                    percentage = (trip_expenses / trip['budget']) * 100
+                    
+                    print(f"\nТекущие расходы: {trip_expenses:.2f}")
+                    print(f"Бюджет: {trip['budget']:.2f}")
+                    print(f"Использовано: {percentage:.1f}%")
+                    
+                    if percentage >= threshold:
+                        print(f"⚠ Предупреждение: Превышен порог в {threshold}%!")
+                    else:
+                        remaining_percent = threshold - percentage
+                        print(f"До предупреждения осталось: {remaining_percent:.1f}%")
+                else:
+                    print("Ошибка: Порог должен быть между 1 и 99%")
+                return
+        
+        print(f"Ошибка: Поездка с ID {trip_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def main():
+    print("Добро пожаловать в планировщик путешествий!")
+    
+    # Тестовые данные
+    trips.extend([
+        {'id': 1, 'destination': 'Париж', 'description': 'Романтическое путешествие', 
+         'start_date': '2024-06-01', 'end_date': '2024-06-07', 'budget': 1500.00,
+         'status': 'planned', 'travelers': ['Анна', 'Иван']}
+    ])
+    
+    expenses.extend([
+        {'id': 1, 'trip_id': 1, 'trip_destination': 'Париж', 
+         'category': 'транспорт', 'description': 'Авиабилеты', 
+         'amount': 600.00, 'date': '2024-05-15', 'payment_method': 'card'},
+        {'id': 2, 'trip_id': 1, 'trip_destination': 'Париж',
+         'category': 'жилье', 'description': 'Отель', 
+         'amount': 400.00, 'date': '2024-05-20', 'payment_method': 'card'}
+    ])
+    
+    # Демонстрация управления бюджетом
+    add_expense()
+    show_trip_expenses()
+    show_expenses_by_category()
+    set_budget_alert()
+
+
 if __name__ == "__main__":
     main()
