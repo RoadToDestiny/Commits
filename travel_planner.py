@@ -577,6 +577,254 @@ def main():
     show_expenses_by_category()
     set_budget_alert()
 
+def create_packing_list():
+    """Создает список упаковки для поездки"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        
+        for trip in trips:
+            if trip['id'] == trip_id:
+                print(f"\nСоздание списка упаковки для поездки в '{trip['destination']}'")
+                
+                packing_list = {
+                    'id': len(packing_lists) + 1,
+                    'trip_id': trip_id,
+                    'items': [],
+                    'categories': ['одежда', 'обувь', 'гигиена', 'документы', 'электроника', 'другое']
+                }
+                
+                print("Добавьте предметы для упаковки (введите 'готово' для завершения):")
+                
+                while True:
+                    item_name = input("Название предмета: ")
+                    if item_name.lower() == 'готово':
+                        break
+                    
+                    print("Категории:")
+                    for i, category in enumerate(packing_list['categories'], 1):
+                        print(f"   {i}. {category}")
+                    
+                    try:
+                        category_choice = int(input("Выберите категорию (номер): ")) - 1
+                        if 0 <= category_choice < len(packing_list['categories']):
+                            category = packing_list['categories'][category_choice]
+                        else:
+                            category = 'другое'
+                    except ValueError:
+                        category = 'другое'
+                    
+                    quantity = input("Количество (по умолчанию 1): ") or "1"
+                    
+                    try:
+                        quantity_int = int(quantity)
+                    except ValueError:
+                        quantity_int = 1
+                    
+                    item = {
+                        'name': item_name,
+                        'category': category,
+                        'quantity': quantity_int,
+                        'packed': False
+                    }
+                    
+                    packing_list['items'].append(item)
+                
+                packing_lists.append(packing_list)
+                print(f"Список упаковки создан! Предметов: {len(packing_list['items'])}")
+                return
+        
+        print(f"Ошибка: Поездка с ID {trip_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def show_packing_list():
+    """Показывает список упаковки"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        
+        packing_list = next((pl for pl in packing_lists if pl['trip_id'] == trip_id), None)
+        
+        if not packing_list or not packing_list['items']:
+            print("Для этой поездки нет списка упаковки!")
+            return
+        
+        print(f"\nСписок упаковки:")
+        print("=" * 60)
+        
+        packed_count = sum(1 for item in packing_list['items'] if item['packed'])
+        total_count = len(packing_list['items'])
+        progress = (packed_count / total_count) * 100 if total_count > 0 else 0
+        
+        print(f"Прогресс упаковки: {packed_count}/{total_count} ({progress:.1f}%)")
+        print("-" * 60)
+        
+        # Группируем по категориям
+        items_by_category = {}
+        for item in packing_list['items']:
+            category = item['category']
+            if category not in items_by_category:
+                items_by_category[category] = []
+            items_by_category[category].append(item)
+        
+        for category, items in items_by_category.items():
+            print(f"\n{category.upper()}:")
+            for item in items:
+                status = "✅" if item['packed'] else "📦"
+                print(f"   {status} {item['name']} x{item['quantity']}")
+        
+        print("-" * 60)
+        
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def mark_item_packed():
+    """Отмечает предмет как упакованный"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        
+        packing_list = next((pl for pl in packing_lists if pl['trip_id'] == trip_id), None)
+        
+        if not packing_list or not packing_list['items']:
+            print("Для этой поездки нет списка упаковки!")
+            return
+        
+        print("Предметы для упаковки:")
+        for i, item in enumerate(packing_list['items'], 1):
+            status = "✅" if item['packed'] else "📦"
+            print(f"{i}. {status} {item['name']} x{item['quantity']}")
+        
+        item_choice = int(input("Введите номер предмета для отметки: ")) - 1
+        
+        if 0 <= item_choice < len(packing_list['items']):
+            item = packing_list['items'][item_choice]
+            item['packed'] = not item['packed']
+            status = "упакован" if item['packed'] else "не упакован"
+            print(f"Предмет '{item['name']}' отмечен как {status}!")
+        else:
+            print("Ошибка: Неверный номер предмета!")
+            
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def create_pre_trip_checklist():
+    """Создает предпоездочный контрольный список"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        
+        for trip in trips:
+            if trip['id'] == trip_id:
+                print(f"\nСоздание контрольного списка для поездки в '{trip['destination']}'")
+                
+                default_tasks = [
+                    'Забронировать билеты',
+                    'Забронировать жилье',
+                    'Оформить страховку',
+                    'Проверить паспорт/визу',
+                    'Обменять валюту',
+                    'Скачать карты',
+                    'Уведомить банк о поездке',
+                    'Загрузить развлечения'
+                ]
+                
+                checklist = {
+                    'id': len(checklists) + 1,
+                    'trip_id': trip_id,
+                    'tasks': [],
+                    'completed': False
+                }
+                
+                print("Добавьте задачи (введите 'готово' для завершения):")
+                print("Или нажмите Enter для использования стандартных задач")
+                
+                use_default = input("Использовать стандартные задачи? (y/n): ").lower()
+                
+                if use_default == 'y':
+                    for task in default_tasks:
+                        checklist['tasks'].append({
+                            'description': task,
+                            'completed': False,
+                            'due_date': ''
+                        })
+                else:
+                    while True:
+                        task_desc = input("Описание задачи: ")
+                        if task_desc.lower() == 'готово':
+                            break
+                        
+                        checklist['tasks'].append({
+                            'description': task_desc,
+                            'completed': False,
+                            'due_date': ''
+                        })
+                
+                checklists.append(checklist)
+                print(f"Контрольный список создан! Задач: {len(checklist['tasks'])}")
+                return
+        
+        print(f"Ошибка: Поездка с ID {trip_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def show_checklist():
+    """Показывает контрольный список"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        
+        checklist = next((cl for cl in checklists if cl['trip_id'] == trip_id), None)
+        
+        if not checklist or not checklist['tasks']:
+            print("Для этой поездки нет контрольного списка!")
+            return
+        
+        completed_tasks = sum(1 for task in checklist['tasks'] if task['completed'])
+        total_tasks = len(checklist['tasks'])
+        progress = (completed_tasks / total_tasks) * 100 if total_tasks > 0 else 0
+        
+        print(f"\nКонтрольный список:")
+        print("=" * 60)
+        print(f"Прогресс: {completed_tasks}/{total_tasks} ({progress:.1f}%)")
+        print("-" * 60)
+        
+        for i, task in enumerate(checklist['tasks'], 1):
+            status = "✅" if task['completed'] else "⏳"
+            print(f"{i}. {status} {task['description']}")
+            if task['due_date']:
+                print(f"   Срок: {task['due_date']}")
+        
+        print("-" * 60)
+        
+        if progress == 100:
+            print("🎉 Все задачи выполнены! Готовы к поездке!")
+        
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def main():
+    print("Добро пожаловать в планировщик путешествий!")
+    
+    # Тестовые данные
+    trips.extend([
+        {'id': 1, 'destination': 'Париж', 'description': 'Романтическое путешествие', 
+         'start_date': '2024-06-01', 'end_date': '2024-06-07', 'budget': 1500.00,
+         'status': 'planned', 'travelers': ['Анна', 'Иван']}
+    ])
+    
+    # Демонстрация упаковки и чеклистов
+    create_packing_list()
+    show_packing_list()
+    mark_item_packed()
+    create_pre_trip_checklist()
+    show_checklist()
 
 if __name__ == "__main__":
     main()
