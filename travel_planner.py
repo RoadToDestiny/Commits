@@ -826,5 +826,268 @@ def main():
     create_pre_trip_checklist()
     show_checklist()
 
+def add_travel_document():
+    """Добавляет документ для поездки"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        doc_type = input("Тип документа (паспорт, виза, билеты, страховка, другое): ")
+        doc_number = input("Номер документа: ")
+        details = input("Детали (дата действия и т.д.): ")
+        
+        for trip in trips:
+            if trip['id'] == trip_id:
+                document = {
+                    'id': len(travel_docs) + 1,
+                    'trip_id': trip_id,
+                    'trip_destination': trip['destination'],
+                    'type': doc_type,
+                    'number': doc_number,
+                    'details': details,
+                    'scan_path': '',  # Путь к скан-копии
+                    'important': True
+                }
+                travel_docs.append(document)
+                print(f"Документ '{doc_type}' добавлен!")
+                return
+        
+        print(f"Ошибка: Поездка с ID {trip_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def show_travel_documents():
+    """Показывает документы поездки"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        
+        trip_docs = [doc for doc in travel_docs if doc['trip_id'] == trip_id]
+        
+        if not trip_docs:
+            print("Для этой поездки нет документов!")
+            return
+        
+        print(f"\nДокументы для поездки:")
+        print("-" * 60)
+        
+        for doc in trip_docs:
+            importance = "‼️ ВАЖНО" if doc['important'] else ""
+            print(f"{doc['type'].upper()} {importance}")
+            print(f"   Номер: {doc['number']}")
+            print(f"   Детали: {doc['details']}")
+            if doc['scan_path']:
+                print(f"   Скан: {doc['scan_path']}")
+            print()
+        
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def add_useful_information():
+    """Добавляет полезную информацию"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        category = input("Категория (транспорт, связь, валюта, питание, безопасность): ")
+        title = input("Заголовок: ")
+        description = input("Описание: ")
+        
+        for trip in trips:
+            if trip['id'] == trip_id:
+                info = {
+                    'id': len(useful_info) + 1,
+                    'trip_id': trip_id,
+                    'trip_destination': trip['destination'],
+                    'category': category,
+                    'title': title,
+                    'description': description
+                }
+                useful_info.append(info)
+                print(f"Информация '{title}' добавлена!")
+                return
+        
+        print(f"Ошибка: Поездка с ID {trip_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def show_useful_information():
+    """Показывает полезную информацию"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        
+        trip_info = [info for info in useful_info if info['trip_id'] == trip_id]
+        
+        if not trip_info:
+            print("Для этой поездки нет полезной информации!")
+            return
+        
+        # Группируем по категориям
+        info_by_category = {}
+        for info in trip_info:
+            category = info['category']
+            if category not in info_by_category:
+                info_by_category[category] = []
+            info_by_category[category].append(info)
+        
+        print(f"\nПолезная информация:")
+        print("=" * 60)
+        
+        for category, items in info_by_category.items():
+            print(f"\n{category.upper()}:")
+            for item in items:
+                print(f"   • {item['title']}")
+                print(f"     {item['description']}")
+                print()
+        
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def add_emergency_contact():
+    """Добавляет контакт на экстренный случай"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        contact_type = input("Тип контакта (скорая, полиция, посольство, такси, отель): ")
+        name = input("Название/имя: ")
+        phone = input("Телефон: ")
+        address = input("Адрес: ")
+        notes = input("Примечания: ")
+        
+        for trip in trips:
+            if trip['id'] == trip_id:
+                contact = {
+                    'id': len(emergency_contacts) + 1,
+                    'trip_id': trip_id,
+                    'trip_destination': trip['destination'],
+                    'type': contact_type,
+                    'name': name,
+                    'phone': phone,
+                    'address': address,
+                    'notes': notes
+                }
+                emergency_contacts.append(contact)
+                print(f"Контакт '{name}' добавлен!")
+                return
+        
+        print(f"Ошибка: Поездка с ID {trip_id} не найдена!")
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректные данные!")
+
+def show_emergency_info():
+    """Показывает экстренную информацию"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        
+        trip_contacts = [ec for ec in emergency_contacts if ec['trip_id'] == trip_id]
+        
+        if not trip_contacts:
+            print("Для этой поездки нет экстренных контактов!")
+            return
+        
+        print(f"\nЭкстренная информация:")
+        print("=" * 60)
+        print("‼️ ВАЖНО: Сохраните эту информацию в доступном месте")
+        print("-" * 60)
+        
+        for contact in trip_contacts:
+            print(f"\n{contact['type'].upper()}: {contact['name']}")
+            print(f"   Телефон: {contact['phone']}")
+            if contact['address']:
+                print(f"   Адрес: {contact['address']}")
+            if contact['notes']:
+                print(f"   Примечания: {contact['notes']}")
+        
+        # Добавляем общие рекомендации
+        print(f"\n📋 Общие рекомендации по безопасности:")
+        print("   • Храните копии документов отдельно от оригиналов")
+        print("   • Знайте адрес своего посольства")
+        print("   • Имейте при себе страховой полис")
+        print("   • Сообщите близким о вашем маршруте")
+        
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def show_trip_summary():
+    """Показывает сводку по поездке"""
+    show_all_trips()
+    
+    try:
+        trip_id = int(input("Введите ID поездки: "))
+        
+        trip = next((t for t in trips if t['id'] == trip_id), None)
+        
+        if not trip:
+            print(f"Ошибка: Поездка с ID {trip_id} не найдена!")
+            return
+        
+        print(f"\n📋 Сводка поездки в '{trip['destination']}':")
+        print("=" * 60)
+        
+        # Основная информация
+        print(f"Даты: {trip['start_date']} - {trip['end_date']}")
+        print(f"Статус: {trip['status']}")
+        print(f"Путешественники: {', '.join(trip['travelers']) if trip['travelers'] else 'Нет'}")
+        
+        # Бюджет
+        trip_expenses = sum(e['amount'] for e in expenses if e['trip_id'] == trip_id)
+        print(f"\n💰 Бюджет: {trip['budget']:.2f}")
+        print(f"Потрачено: {trip_expenses:.2f}")
+        if trip['budget'] > 0:
+            percentage = (trip_expenses / trip['budget']) * 100
+            print(f"Использовано: {percentage:.1f}%")
+        
+        # Достопримечательности
+        trip_attractions = [a for a in attractions if a['trip_id'] == trip_id]
+        print(f"\n🏛 Достопримечательности: {len(trip_attractions)}")
+        
+        # Документы
+        trip_docs = [doc for doc in travel_docs if doc['trip_id'] == trip_id]
+        important_docs = [doc for doc in trip_docs if doc['important']]
+        print(f"📄 Документов: {len(trip_docs)} ({len(important_docs)} важных)")
+        
+        # Упаковка
+        packing_list = next((pl for pl in packing_lists if pl['trip_id'] == trip_id), None)
+        if packing_list and packing_list['items']:
+            packed_count = sum(1 for item in packing_list['items'] if item['packed'])
+            print(f"\n🎒 Упаковка: {packed_count}/{len(packing_list['items'])} предметов")
+        
+        # Контрольный список
+        checklist = next((cl for cl in checklists if cl['trip_id'] == trip_id), None)
+        if checklist and checklist['tasks']:
+            completed_tasks = sum(1 for task in checklist['tasks'] if task['completed'])
+            print(f"✅ Задачи: {completed_tasks}/{len(checklist['tasks'])} выполнено")
+        
+        print("=" * 60)
+        
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите корректный ID!")
+
+def main():
+    print("Добро пожаловать в планировщик путешествий!")
+    
+    # Тестовые данные
+    trips.extend([
+        {'id': 1, 'destination': 'Париж', 'description': 'Романтическое путешествие', 
+         'start_date': '2024-06-01', 'end_date': '2024-06-07', 'budget': 1500.00,
+         'status': 'planned', 'travelers': ['Анна', 'Иван']}
+    ])
+    
+    # Демонстрация информации и документов
+    add_travel_document()
+    show_travel_documents()
+    add_useful_information()
+    show_useful_information()
+    add_emergency_contact()
+    show_emergency_info()
+    show_trip_summary()
+
+
 if __name__ == "__main__":
     main()
