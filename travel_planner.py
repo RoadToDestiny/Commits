@@ -1088,6 +1088,70 @@ def main():
     show_emergency_info()
     show_trip_summary()
 
+def show_main_menu():
+    """Показывает главное меню программы"""
+    print("\n" + "="*50)
+    print("           ПЛАНИРОВЩИК ПУТЕШЕСТВИЙ")
+    print("="*50)
+    print("1. Показать все поездки")
+    print("2. Добавить поездку")
+    print("3. Управление поездкой")
+    print("4. Маршрут и достопримечательности")
+    print("5. Бюджет и расходы")
+    print("6. Упаковка и подготовка")
+    print("7. Документы и информация")
+    print("8. Выход")
+    print("="*50)
+
+def get_menu_choice():
+    """Получает и проверяет выбор пользователя"""
+    try:
+        choice = int(input("\nВыберите действие (1-8): "))
+        return choice
+    except ValueError:
+        print("Ошибка: Пожалуйста, введите число от 1 до 8!")
+        return -1
+
+def initialize_sample_data():
+    """Инициализирует примеры данных для демонстрации"""
+    sample_trips = [
+        {'id': 1, 'destination': 'Париж', 'description': 'Романтическое путешествие', 
+         'start_date': '2024-06-01', 'end_date': '2024-06-07', 'budget': 1500.00,
+         'status': 'planned', 'travelers': ['Анна', 'Иван']},
+        {'id': 2, 'destination': 'Сочи', 'description': 'Отдых на море', 
+         'start_date': '2024-07-15', 'end_date': '2024-07-25', 'budget': 800.00,
+         'status': 'planned', 'travelers': ['Семья']}
+    ]
+    trips.extend(sample_trips)
+    
+    attractions.extend([
+        {'id': 1, 'trip_id': 1, 'trip_destination': 'Париж',
+         'name': 'Эйфелева башня', 'description': 'Символ Парижа',
+         'visit_date': '', 'estimated_cost': 25.00, 'priority': 'high', 'visited': False}
+    ])
+    
+    expenses.extend([
+        {'id': 1, 'trip_id': 1, 'trip_destination': 'Париж',
+         'category': 'транспорт', 'description': 'Авиабилеты',
+         'amount': 600.00, 'date': '2024-05-15', 'payment_method': 'card'}
+    ])
+    
+    travel_docs.extend([
+        {'id': 1, 'trip_id': 1, 'trip_destination': 'Париж',
+         'type': 'паспорт', 'number': '123456789', 
+         'details': 'Действителен до 2028', 'scan_path': '', 'important': True}
+    ])
+
+def main():
+    print("Добро пожаловать в планировщик путешествий!")
+    
+    # Загружаем примеры данных
+    initialize_sample_data()
+    
+    # Демонстрируем меню
+    show_main_menu()
+    choice = get_menu_choice()
+    print(f"Вы выбрали: {choice}")
 
 if __name__ == "__main__":
     main()
